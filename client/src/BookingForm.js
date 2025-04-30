@@ -62,15 +62,26 @@ function BookingForm() {
         body: JSON.stringify(formData),
         mode: 'cors',
       });
-
+    
       const data = await response.json();
       const stripe = await stripePromise;
-      await stripe.redirectToCheckout({ sessionId: data.sessionId });
+    
+      if (!stripe) {
+        console.error('Stripe не загрузился!');
+        alert('Платёжная система не готова. Попробуйте позже.');
+        return;
+      }
+    
+      const result = await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      if (result.error) {
+        console.error('Ошибка перенаправления в Stripe:', result.error);
+        alert('Ошибка при переходе к оплате: ' + result.error.message);
+      }
     } catch (error) {
       console.error('❌ Ошибка при создании Stripe-сессии:', error);
       alert('Ошибка при создании оплаты. Попробуйте позже.');
     }
-  };
+    
 
   const tileClassName = ({ date }) => {
     const formatted = date.toISOString().split('T')[0];
