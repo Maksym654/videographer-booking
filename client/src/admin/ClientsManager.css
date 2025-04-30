@@ -1,139 +1,180 @@
 .clients-manager {
-    background-color: #1e1e2f;
-    color: #fff;
-    padding: 20px;
-    border-radius: 12px;
+  background-color: #1e1e2f;
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.clients-manager h2,
+.clients-manager h3,
+.clients-manager h4,
+.clients-manager h5 {
+  color: #ffb8ff;
+  margin-top: 10px;
+}
+
+.sort-controls,
+.new-client-form,
+.add-booking-form {
+  margin-bottom: 20px;
+}
+
+.sort-controls select,
+.new-client-form input,
+.add-booking-form input,
+.edit-section input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #b08aff;
+  background-color: #2e2e42;
+  color: #fff;
+  margin-right: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.client-card {
+  background-color: #2a2a3d;
+  border: 1px solid #b08aff;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.client-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 0 10px rgba(176, 138, 255, 0.4);
+}
+
+.client-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+  color: #dcb4ff;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.client-info span {
+  color: #dcb4ff;
+  white-space: nowrap;
+}
+
+.client-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-top: 6px;
+  color: #bbb;
+  gap: 10px;
+}
+
+.edit-section {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #252538;
+  border: 1px solid #6a0dad;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.bookings-list .booking-entry {
+  background-color: #3a3a50;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Статусные кнопки */
+.status-button {
+  background-color: transparent;
+  border: 1px solid #b08aff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 5px;
+  transition: 0.3s ease;
+}
+
+.status-pending {
+  color: orange;
+  border-color: orange;
+}
+
+.status-done {
+  color: limegreen;
+  border-color: limegreen;
+}
+
+.status-button:hover {
+  opacity: 0.8;
+}
+
+/* Общие кнопки */
+button {
+  background-color: #b08aff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #a070ff;
+}
+
+/* Кнопка удаления */
+.delete-btn {
+  background-color: #ff4b5c;
+}
+
+.delete-btn:hover {
+  background-color: #ff2b3c;
+}
+
+/* Stripe info */
+.stripe-payment-info {
+  font-size: 12px;
+  color: #6fe09f;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 480px) {
+  .clients-manager {
+    padding: 12px;
   }
-  
-  .clients-manager h2,
-  .clients-manager h3,
-  .clients-manager h4,
-  .clients-manager h5 {
-    color: #ffb8ff;
-    margin-top: 10px;
-  }
-  
-  .sort-controls,
-  .new-client-form,
-  .add-booking-form {
-    margin-bottom: 20px;
-  }
-  
-  .sort-controls select,
-  .new-client-form input,
-  .add-booking-form input,
-  .edit-section input {
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #b08aff;
-    background-color: #2e2e42;
-    color: #fff;
-    margin-right: 10px;
-  }
-  
+
   .client-card {
-    background-color: #2a2a3d;
-    border: 1px solid #b08aff;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 15px;
-    transition: transform 0.2s ease;
+    padding: 12px;
+    font-size: 0.95rem;
   }
-  
-  .client-card:hover {
-    transform: scale(1.01);
-    box-shadow: 0 0 10px rgba(176, 138, 255, 0.4);
+
+  .client-info span,
+  .client-summary span {
+    font-size: 0.9rem;
   }
-  
-  .client-summary {
-    cursor: pointer;
-  }
-  
-  .edit-section {
-    margin-top: 15px;
-    padding: 15px;
-    background-color: #252538;
-    border: 1px solid #6a0dad;
-    border-radius: 10px;
-  }
-  
-  .edit-section input {
-    margin-bottom: 10px;
-    width: calc(100% - 20px);
-  }
-  
-  .bookings-list .booking-entry {
-    background-color: #3a3a50;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }  
-  
-  /* Статусные кнопки */
-  .status-button {
-    background-color: transparent;
-    border: 1px solid #b08aff;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-right: 8px;
-    transition: color 0.3s ease, border-color 0.3s ease;
-  }
-  
-  .status-pending {
-    color: orange;
-    border-color: orange;
-  }
-  
-  .status-done {
-    color: limegreen;
-    border-color: limegreen;
-  }
-  
-  .status-button:hover {
-    opacity: 0.8;
-  }
-  
-  /* Кнопки общего действия */
-  button {
-    background-color: #b08aff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    cursor: pointer;
-    margin-top: 5px;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #a070ff;
-  }
-  
-  /* Кнопка удаления */
-  .delete-btn {
-    background-color: #ff4b5c;
-  }
-  
-  .delete-btn:hover {
-    background-color: #ff2b3c;
-  }
-  
+
+  .edit-section input,
+  .new-client-form input,
   .add-booking-form input {
-    margin-right: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
   }
-  
+
+  .edit-section button,
   .add-booking-form button {
-    margin-top: 10px;
+    width: 100%;
+    margin-top: 8px;
   }
-  .stripe-payment-info {
-    font-size: 12px;
-    color: #6fe09f;
-    margin-top: 4px;
-    font-style: italic;
-  }
-  
+}
