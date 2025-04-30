@@ -230,3 +230,26 @@ li div {
     font-size: 0.95rem;
   }
 }
+.client-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  color: #6a0dad;
+}
+
+.client-info span {
+  white-space: nowrap;
+}
+
+.client-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  color: #333;
+}

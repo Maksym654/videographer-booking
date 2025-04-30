@@ -213,13 +213,18 @@ function ClientsManager() {
         const pendingCount = countPendingBookings(client);
         return (
           <div key={client.id} className="client-card">
-            <div onClick={() => handleEditClick(client.id, client)} className="client-summary">
-              <strong>Имя:</strong> {client.name} | <strong>Телефон:</strong> {client.phone} | <strong>Email:</strong> {client.email || '-'}
-              <br />
-              <strong>Общая сумма:</strong> {client.totalSum}€
-              {pendingCount > 0 && <span style={{ color: 'orange', marginLeft: '10px' }}>Ожидает заказов: {pendingCount}</span>}
-              <span style={{ color: '#999', marginLeft: '10px' }}>Всего заказов: {client.totalOrders || 0}</span>
-            </div>
+            <div onClick={() => handleEditClick(client.id, client)} className="client-info">
+  <span><strong>Имя:</strong> {client.name || '-'}</span>
+  <span><strong>Телефон:</strong> {client.phone || '-'}</span>
+  <span><strong>Email:</strong> {client.email || '-'}</span>
+
+  <div className="client-summary">
+    <span><strong>Общая сумма:</strong> {client.totalSum || 0}€</span>
+    {pendingCount > 0 && <span style={{ color: 'orange' }}>Ожидает заказов: {pendingCount}</span>}
+    <span style={{ color: '#999' }}>Всего заказов: {client.totalOrders || 0}</span>
+  </div>
+</div>
+
 
             {editClientId === client.id && (
               <div className="edit-section">
