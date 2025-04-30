@@ -9,10 +9,14 @@ const PORT = 4242;
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // CORS
+// ✅ Улучшенный CORS для поддержки preflight
 app.use(cors({
   origin: 'https://videographer-booking-client.onrender.com',
-  methods: ['GET', 'POST']
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true
 }));
+
 
 app.use(express.json());
 
