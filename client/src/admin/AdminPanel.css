@@ -1,3 +1,4 @@
+/* Общий стиль админки */
 .admin-panel {
   padding: 2rem;
   font-family: 'Poppins', Arial, sans-serif;
@@ -48,96 +49,146 @@
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
 }
 
-ol {
-  padding-left: 20px;
-}
-
-li {
-  background-color: #f3f1fb;
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  border-left: 4px solid #a56cf4;
-  border-radius: 6px;
-  list-style-position: inside;
-}
-
-li div {
-  margin-bottom: 4px;
-}
-
-/* 🟢 Новый стиль для ClientsManager */
 .clients-manager {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  background-color: #1e1e2f;
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.clients-manager h2,
+.clients-manager h3,
+.clients-manager h4,
+.clients-manager h5 {
+  color: #ffb8ff;
+  margin-top: 10px;
+}
+
+.sort-controls,
+.new-client-form,
+.add-booking-form {
+  margin-bottom: 20px;
+}
+
+.sort-controls select,
+.new-client-form input,
+.add-booking-form input,
+.edit-section input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #b08aff;
+  background-color: #2e2e42;
+  color: #fff;
+  margin-right: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .client-card {
   background-color: #fdfcff;
+  color: #333;
   border: 2px solid #b08aff;
   border-radius: 12px;
-  padding: 15px;
+  padding: 16px;
+  margin-bottom: 15px;
   box-shadow: 0 4px 12px rgba(176, 138, 255, 0.2);
+}
+
+.client-info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
-.client-card strong {
+.client-info span {
   color: #6a0dad;
+  font-weight: 500;
+  font-size: 0.95rem;
 }
 
-.client-card .bookings-list {
-  margin-top: 10px;
-}
-
-.booking-item {
-  background-color: #f3f1fb;
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin-top: 5px;
+.client-summary {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
-}
-
-.edit-form input {
-  margin: 5px 0;
-  padding: 8px;
-  width: 100%;
-  border: 1px solid #d6d6f5;
-  border-radius: 8px;
-}
-
-.edit-form button {
-  margin-right: 8px;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 8px;
-  background-color: #6a0dad;
-  color: white;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.edit-form button:hover {
-  background-color: #a56cf4;
-}
-
-.sort-controls {
-  display: flex;
-  align-items: center;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  color: #333;
   gap: 10px;
-  margin-bottom: 20px;
 }
 
-.sort-controls select {
+.edit-section {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #252538;
+  border: 1px solid #6a0dad;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.bookings-list .booking-entry {
+  background-color: #f7f2ff;
+  color: #333;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(176, 138, 255, 0.15);
+}
+
+.status-button {
+  background-color: white;
+  border: 2px solid #b08aff;
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-/* 🟡 Адаптация под мобильные устройства */
+.status-pending {
+  color: orange;
+  border-color: orange;
+}
+
+.status-done {
+  background-color: #6a0dad;
+  color: white;
+  border-color: #6a0dad;
+}
+
+.status-button:hover {
+  opacity: 0.9;
+}
+
+button {
+  background-color: #b08aff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #a070ff;
+}
+
+.delete-btn {
+  background-color: #ff4b5c;
+}
+
+.delete-btn:hover {
+  background-color: #ff2b3c;
+}
+
+.stripe-payment-info {
+  font-size: 12px;
+  color: #6fe09f;
+  margin-top: 4px;
+  font-style: italic;
+}
+
 @media (max-width: 600px) {
   .admin-panel {
     padding: 1rem;
@@ -199,6 +250,7 @@ li div {
     padding: 10px;
   }
 }
+
 @media (max-width: 480px) {
   .admin-panel {
     padding: 1rem;
@@ -213,7 +265,7 @@ li div {
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
-    color: #333; /* 👈 читаемый текст */
+    color: #333;
   }
 
   .client-card > div {
@@ -229,27 +281,4 @@ li div {
     flex: 1;
     font-size: 0.95rem;
   }
-}
-.client-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  color: #6a0dad;
-}
-
-.client-info span {
-  white-space: nowrap;
-}
-
-.client-summary {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  margin-top: 4px;
-  color: #333;
 }
