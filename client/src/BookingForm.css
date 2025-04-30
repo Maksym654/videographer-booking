@@ -1,153 +1,213 @@
 .booking-container {
   max-width: 500px;
-  margin: 40px auto;
+  margin: 30px auto;
   padding: 20px;
-  border: 2px solid #a379f0;
-  border-radius: 16px;
-  background-color: #1e1e2f;
-  box-shadow: 0 0 20px rgba(163, 121, 240, 0.4);
-  color: #fff;
+  background-color: #1e1b2e;
+  border: 2px solid #b084f7;
+  border-radius: 20px;
+  box-shadow: 0 0 20px #b084f7;
+  color: white;
 }
 
-/* Центрирование заголовка */
 .booking-title {
   text-align: center;
-  color: #e291ff;
+  font-size: 24px;
   margin-bottom: 20px;
+  color: #e6b3ff;
 }
 
-/* Язык */
 .language-selector {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
+  text-align: center;
   margin-bottom: 20px;
 }
 
 .language-selector button {
-  background: transparent;
-  border: 1px solid #a379f0;
-  padding: 4px 8px;
-  border-radius: 8px;
-  color: #fff;
+  margin: 0 5px;
+  padding: 6px 12px;
+  border: 2px solid #b084f7;
+  background: none;
+  color: white;
+  border-radius: 10px;
   cursor: pointer;
+  transition: 0.3s;
 }
 
 .language-selector .active-lang {
-  background-color: #a379f0;
+  background-color: #b084f7;
+  color: white;
 }
 
-/* Формы */
 .booking-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
 }
 
-.booking-form input,
-.booking-form select {
+input, select {
+  width: 100%;
   padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: #2e294e;
+  color: white;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #b084f7;
+}
+
+.react-calendar {
+  background-color: transparent;
+  border: none;
+  font-family: inherit;
+  margin: 0 auto;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.react-calendar__navigation button {
+  background-color: #f0f0f0;
+  color: #2e2e2e;
   border: none;
   border-radius: 8px;
-  background-color: #2a2a3d;
-  color: #fff;
-  box-sizing: border-box;
+  padding: 5px 10px;
+  font-size: 16px;
 }
 
-/* Календарь */
-.react-calendar {
-  background-color: #2a2a3d;
+.react-calendar__navigation button:disabled {
+  opacity: 0.4;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
   color: #fff;
-  border: none;
-  padding: 10px;
-  border-radius: 12px;
-  margin: auto;
+  font-size: 0.75rem;
 }
 
 .react-calendar__tile {
-  padding: 10px 6px;
-  background: transparent;
+  padding: 0.5em 0;
   border-radius: 50%;
+  background-color: #333;
+  color: #fff;
 }
 
 .react-calendar__tile--now {
-  background: #6c63ff33;
-  border-radius: 50%;
+  background: #b084f7;
+  color: white;
 }
 
 .react-calendar__tile--active {
-  background: #a379f0 !important;
-  color: white;
-  border-radius: 50%;
+  background: #27ae60 !important;
+  color: white !important;
 }
 
-/* Подсветка доступных дат */
+.react-calendar__tile:disabled {
+  background-color: transparent;
+  color: #555 !important;
+}
+
 .available-date {
-  background-color: #2ecc71 !important;
+  background-color: #27ae60 !important;
   color: white !important;
   border-radius: 50% !important;
 }
 
-/* Блок согласий */
+.selected-time {
+  text-align: center;
+  color: #e6b3ff;
+  font-weight: bold;
+}
+
 .agreement-block {
-  border: 2px solid #a379f0;
-  padding: 15px;
-  border-radius: 12px;
-  background-color: #1e1e2f;
+  border: 1px solid #b084f7;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #2e294e;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  font-size: 14px;
+  gap: 10px;
 }
 
 .agreement-block label {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-  line-height: 1.4;
-  color: #fff;
 }
 
 .agreement-block input[type="checkbox"] {
   transform: scale(1.2);
-  margin-top: 3px;
 }
 
-/* Кнопка */
 .submit-button {
-  background: linear-gradient(90deg, #ff9bff, #a379f0);
-  color: white;
+  background: linear-gradient(to right, #ff77e9, #b084f7);
   border: none;
-  border-radius: 10px;
-  padding: 14px;
-  font-size: 16px;
-  cursor: pointer;
+  padding: 12px;
+  color: white;
   font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit-button:hover {
+  opacity: 0.9;
+}
+
+/* Удаляем стрелки годов */
+.react-calendar__navigation__label {
+  pointer-events: none;
+}
+
+/* Центрирование календаря на desktop */
+@media (min-width: 768px) {
+  .react-calendar {
+    margin: 0 auto;
+  }
+
+  .booking-container {
+    max-width: 520px;
+  }
 }
 
 /* Мобильная адаптация */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
+  body {
+    background-color: #1e1b2e;
+  }
+
   .booking-container {
     margin: 20px;
-    padding: 16px;
+    padding: 15px;
+  }
+
+  .react-calendar__navigation button {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+
+  .react-calendar__tile {
+    font-size: 14px;
+  }
+
+  .agreement-block label {
+    font-size: 14px;
   }
 
   .submit-button {
-    padding: 12px;
-    font-size: 15px;
-  }
-
-  .react-calendar {
-    width: 100%;
-  }
-
-  .booking-form input,
-  .booking-form select {
-    font-size: 14px;
+    font-size: 16px;
   }
 }
