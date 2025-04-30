@@ -124,7 +124,84 @@ function BookingForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="booking-form">
-        {/* ... остальные поля остаются без изменений ... */}
+        <div className="form-group">
+          <label>{t.name}:</label>
+          <input
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>{t.phone}:</label>
+          <input
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Email:</label>
+          <input
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>{t.type}:</label>
+          <select
+            value={formData.product}
+            onChange={(e) => setFormData({ ...formData, product: e.target.value })}
+            required
+          >
+            <option value="">--</option>
+            {t.types.map((type, idx) => (
+              <option key={idx} value={type}>{type}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>{t.date}:</label>
+          <Calendar
+            onChange={handleDateSelect}
+            tileClassName={tileClassName}
+            minDate={new Date()}
+            maxDate={new Date(new Date().setMonth(new Date().getMonth() + 2))}
+            locale={localeMap[language]}
+          />
+        </div>
+
+        {selectedDate && selectedDate.timeStart && selectedDate.timeEnd && (
+          <div className="selected-time">
+            {t.availableTime}: {selectedDate.timeStart} - {selectedDate.timeEnd}
+          </div>
+        )}
+
+        <div className="agreement-block">
+          <label className="inline-policy">
+            <input
+              type="checkbox"
+              checked={formData.agreePolicy}
+              onChange={(e) => setFormData({ ...formData, agreePolicy: e.target.checked })}
+            />
+            <span>{t.agreeData}</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={formData.agreePrepayment}
+              onChange={(e) => setFormData({ ...formData, agreePrepayment: e.target.checked })}
+            />
+            <span>{t.agreePayment}</span>
+          </label>
+        </div>
+
         <button type="submit" className="submit-button">
           {t.book}
         </button>
