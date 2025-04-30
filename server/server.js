@@ -10,7 +10,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // CORS
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://videographer-booking-client.onrender.com',
   methods: ['GET', 'POST']
 }));
 
@@ -43,8 +43,8 @@ app.post('/create-checkout-session', async (req, res) => {
         },
         quantity: 1,
       }],
-      success_url: 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'http://localhost:3000/canceled',
+      success_url: 'https://videographer-booking-client.onrender.com/success?session_id={CHECKOUT_SESSION_ID}',
+cancel_url: 'https://videographer-booking-client.onrender.com/canceled',
       metadata: { name, phone, email, product },
     });
 
