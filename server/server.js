@@ -1,36 +1,3 @@
-const express = require('express');
-const cors = require('cors');
-const Stripe = require('stripe');
-const { getAvailableDates } = require('./googleSheets');
-require('dotenv').config();
-
-const app = express();
-const PORT = 4242;
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-
-// ✅ Правильный CORS middleware
-const corsOptions = {
-  origin: 'https://videographer-booking-client.onrender.com',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true
-};
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // ✅ Обрабатываем preflight так же
-app.use(express.json());
-
-// Свободные даты
-app.get('/api/available-dates', async (req, res) => {
-  try {
-    const dates = await getAvailableDates();
-    res.json(dates);
-  } catch (error) {
-    res.status(500).json({ error: 'Ошибка при загрузке дат' });
-  }
-});
-
-// Stripe Checkout
 app.post('/create-checkout-session', async (req, res) => {
   const { name, email, phone, product } = req.body;
 
@@ -55,13 +22,10 @@ app.post('/create-checkout-session', async (req, res) => {
       metadata: { name, phone, email, product },
     });
 
+    console.log('✅ Отправляем sessionId клиенту:', session.id);
     res.status(200).json({ sessionId: session.id });
   } catch (error) {
     console.error('Stripe ошибка:', error);
     res.status(500).json({ error: 'Ошибка создания Stripe-сессии' });
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`✅ Сервер запущен на http://localhost:${PORT}`);
 });
