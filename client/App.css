@@ -1,0 +1,168 @@
+body {
+  background-color: #f5f5ff;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.booking-container {
+  max-width: 500px;
+  margin: 40px auto;
+  background-color: #fff;
+  border: 2px solid #b08aff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(176, 138, 255, 0.3);
+}
+
+.booking-title {
+  text-align: center;
+  color: #6a0dad;
+  margin-bottom: 20px;
+}
+
+.language-selector {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.language-selector button {
+  background-color: transparent;
+  border: 1px solid #6a0dad;
+  color: #6a0dad;
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.language-selector button.active-lang,
+.language-selector button:hover {
+  background-color: #6a0dad;
+  color: white;
+}
+
+.booking-form .form-group {
+  margin-bottom: 15px;
+}
+
+.booking-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.booking-form input,
+.booking-form select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d6d6f5;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.booking-form input:focus,
+.booking-form select:focus {
+  border-color: #6a0dad;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #ff8af4, #b08aff);
+  border: none;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.submit-button:hover {
+  background: linear-gradient(90deg, #b08aff, #ff8af4);
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.react-calendar {
+  border: none;
+  width: 100%;
+  background-color: transparent;
+}
+
+.react-calendar__tile {
+  border-radius: 50%;
+  padding: 10px 0;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.react-calendar__tile--now {
+  background-color: #ffe6ff !important;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.react-calendar__tile.available-date {
+  background-color: #c3f7c3;
+  color: #006400;
+  border-radius: 50%;
+}
+
+.react-calendar__tile--active {
+  background-color: #6a0dad !important;
+  color: white !important;
+  border-radius: 50%;
+}
+
+.react-calendar__tile:disabled {
+  color: #ccc;
+  background-color: #f9f9f9;
+}
+
+.react-calendar__navigation__label {
+  pointer-events: none;
+}
+
+.react-calendar__navigation__arrow {
+  font-size: 18px;
+}
+
+.agreement-block {
+  border: 2px solid #b08aff;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #fdfcff;
+  margin-top: 25px;
+  box-shadow: 0 4px 12px rgba(176, 138, 255, 0.2);
+}
+
+.agreement-block label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.agreement-block a {
+  color: #6a0dad;
+  text-decoration: underline;
+}
+
+.agreement-block input[type="checkbox"] {
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.booking-form .submit-button {
+  margin-top: 20px;
+}
