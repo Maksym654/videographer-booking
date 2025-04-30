@@ -12,12 +12,11 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 // ✅ Улучшенный CORS для поддержки preflight
 app.use(cors({
   origin: 'https://videographer-booking-client.onrender.com',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true
+  methods: ['GET', 'POST'],
+  credentials: true,
+  allowedHeaders: ['Content-Type']
 }));
-
-
+app.options('*', cors());
 app.use(express.json());
 
 // Свободные даты
