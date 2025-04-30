@@ -6,13 +6,13 @@ body {
 }
 
 .booking-container {
-  max-width: 500px;
-  margin: 40px auto;
+  max-width: 100%;
+  margin: 0;
   background-color: #fff;
-  border: 2px solid #b08aff;
-  border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 8px 20px rgba(176, 138, 255, 0.3);
+  border: none;
+  border-radius: 0;
+  padding: 20px;
+  box-shadow: none;
 }
 
 .booking-title {
@@ -91,34 +91,64 @@ body {
   background-color: transparent;
 }
 
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #6a0dad;
+}
+
+.react-calendar__navigation button {
+  background: none;
+  border: none;
+  color: #6a0dad;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
 .react-calendar__tile {
   border-radius: 50%;
   padding: 10px 0;
   text-align: center;
+  background-color: #f0f0f0;
+  color: #333;
+  opacity: 1;
   transition: all 0.2s ease-in-out;
 }
 
 .react-calendar__tile--now {
   background-color: #ffe6ff !important;
-  border-radius: 50%;
   font-weight: bold;
 }
 
 .react-calendar__tile.available-date {
   background-color: #c3f7c3;
   color: #006400;
-  border-radius: 50%;
 }
 
 .react-calendar__tile--active {
   background-color: #6a0dad !important;
   color: white !important;
-  border-radius: 50%;
 }
 
 .react-calendar__tile:disabled {
-  color: #ccc;
-  background-color: #f9f9f9;
+  background-color: #f0f0f0 !important;
+  color: #999 !important;
+  cursor: default;
+  opacity: 1 !important;
+}
+
+.react-calendar__tile abbr {
+  color: #333 !important;
+  font-weight: 500;
+}
+
+.react-calendar__tile--active abbr {
+  color: white !important;
+  font-weight: bold;
 }
 
 .selected-time {
@@ -128,7 +158,6 @@ body {
   color: #6a0dad;
 }
 
-/* ✅ Блок согласий (галочки) */
 .agreement-block {
   border: 2px solid #b08aff;
   padding: 20px;
@@ -164,7 +193,6 @@ body {
   font-weight: 500;
 }
 
-/* Политика конфиденциальности */
 .policy-details {
   margin: 0.5rem 0;
   font-size: 0.9rem;
@@ -185,7 +213,7 @@ body {
   margin-top: 0.5rem;
   font-size: 0.85rem;
   line-height: 1.5;
-  color: #333; /* ✅ исправлено с #ccc */
+  color: #333;
 }
 
 .inline-policy {
@@ -211,15 +239,17 @@ body {
   white-space: pre-wrap;
   font-size: 0.85rem;
   padding: 0.75rem 0 0 1.25rem;
-  color: #333; /* ✅ было #ccc */
+  color: #333;
   line-height: 1.5;
 }
 
-/* 🟢 Мобильная адаптация */
 @media (max-width: 480px) {
   .booking-container {
+    width: 100vw;
+    height: 100%;
+    border-radius: 0;
     padding: 15px;
-    margin: 20px auto;
+    box-sizing: border-box;
   }
 
   .language-selector button {
@@ -243,6 +273,14 @@ body {
     font-size: 0.8rem;
   }
 
+  .react-calendar__navigation {
+    font-size: 0.9rem;
+  }
+
+  .react-calendar__navigation button {
+    font-size: 1rem;
+  }
+
   .agreement-block {
     padding: 12px;
   }
@@ -262,40 +300,4 @@ body {
     font-size: 0.8rem;
     padding-left: 1rem;
   }
-}
-.react-calendar__navigation {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  font-size: 1rem;
-  color: #6a0dad;
-}
-
-.react-calendar__navigation button {
-  background: none;
-  border: none;
-  color: #6a0dad;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-@media (max-width: 480px) {
-  .react-calendar__navigation {
-    font-size: 0.9rem;
-  }
-
-  .react-calendar__navigation button {
-    font-size: 1rem;
-  }
-}
-.react-calendar__tile abbr {
-  color: #333 !important;
-  font-weight: 500;
-}
-
-.react-calendar__tile--active abbr {
-  color: white !important;
-  font-weight: bold;
 }
