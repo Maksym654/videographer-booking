@@ -199,3 +199,34 @@ li div {
     padding: 10px;
   }
 }
+@media (max-width: 480px) {
+  .admin-panel {
+    padding: 1rem;
+    margin: 0;
+    width: 100vw;
+    box-sizing: border-box;
+  }
+
+  .client-card {
+    padding: 12px;
+    border-radius: 10px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    color: #333; /* 👈 читаемый текст */
+  }
+
+  .client-card > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  .client-card strong,
+  .client-card span {
+    min-width: 80px;
+    flex: 1;
+    font-size: 0.95rem;
+  }
+}
