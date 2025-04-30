@@ -263,3 +263,30 @@ body {
     padding-left: 1rem;
   }
 }
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #6a0dad;
+}
+
+.react-calendar__navigation button {
+  background: none;
+  border: none;
+  color: #6a0dad;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .react-calendar__navigation {
+    font-size: 0.9rem;
+  }
+
+  .react-calendar__navigation button {
+    font-size: 1rem;
+  }
+}
