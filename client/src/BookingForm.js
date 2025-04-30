@@ -33,6 +33,7 @@ function BookingForm() {
   useEffect(() => {
     const fetchDates = async () => {
       const dates = await getAvailableDates();
+      console.log('📅 Загруженные даты:', dates); // ЛОГ для проверки
       setAvailableDates(dates);
     };
     fetchDates();
@@ -40,6 +41,8 @@ function BookingForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('📨 Отправка формы начата:', formData); // ЛОГ для отладки
+
     if (!formData.agreePolicy || !formData.agreePrepayment) {
       alert(t.agreementError);
       return;
@@ -59,13 +62,12 @@ function BookingForm() {
         body: JSON.stringify(formData),
         mode: 'cors',
       });
-      
-      
+
       const data = await response.json();
       const stripe = await stripePromise;
       await stripe.redirectToCheckout({ sessionId: data.sessionId });
     } catch (error) {
-      console.error('Ошибка при создании Stripe-сессии:', error);
+      console.error('❌ Ошибка при создании Stripe-сессии:', error);
       alert('Ошибка при создании оплаты. Попробуйте позже.');
     }
   };
@@ -78,6 +80,7 @@ function BookingForm() {
   const handleDateSelect = (selectedDate) => {
     const formatted = selectedDate.toISOString().split('T')[0];
     const selected = availableDates.find((d) => d.date === formatted);
+    console.log('🗓 Выбрана дата:', formatted, '=>', selected); // ЛОГ
     setFormData({
       ...formData,
       dateId: selected ? selected.id : null,
