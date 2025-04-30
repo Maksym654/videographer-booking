@@ -1,3 +1,13 @@
+const express = require('express');
+const cors = require('cors');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Убедись, что переменная задана в .env
+
+const app = express();
+const PORT = process.env.PORT || 4242;
+
+app.use(cors());
+app.use(express.json());
+
 app.post('/create-checkout-session', async (req, res) => {
   const { name, email, phone, product } = req.body;
 
@@ -28,4 +38,8 @@ app.post('/create-checkout-session', async (req, res) => {
     console.error('Stripe ошибка:', error);
     res.status(500).json({ error: 'Ошибка создания Stripe-сессии' });
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Сервер запущен на порту ${PORT}`);
 });
