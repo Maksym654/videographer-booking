@@ -9,13 +9,15 @@ const PORT = 4242;
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // ✅ Правильный CORS middleware
-app.use(cors({
+const corsOptions = {
   origin: 'https://videographer-booking-client.onrender.com',
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
-}));
+  allowedHeaders: ['Content-Type'],
+  credentials: true
+};
 
-app.options('*', cors()); // preflight
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // ✅ Обрабатываем preflight так же
 app.use(express.json());
 
 // Свободные даты
