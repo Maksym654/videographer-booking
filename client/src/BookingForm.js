@@ -41,8 +41,8 @@ function BookingForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('📨 Отправка формы начата:', formData); // ЛОГ для отладки
-
+    console.log('📨 Отправка формы начата:', formData);
+  
     if (!formData.agreePolicy || !formData.agreePrepayment) {
       alert(t.agreementError);
       return;
@@ -51,11 +51,11 @@ function BookingForm() {
       alert(t.fillError);
       return;
     }
-
+  
     try {
       localStorage.setItem('bookingFormData', JSON.stringify(formData));
       console.log('📤 Отправка на сервер:', formData);
-
+  
       const response = await fetch('https://videographer-booking-server.onrender.com/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -64,28 +64,30 @@ function BookingForm() {
         body: JSON.stringify(formData),
         mode: 'cors',
       });
-      
+  
       console.log('📥 Ответ от сервера:', response);
-    };
-    
+  
       const data = await response.json();
       const stripe = await stripePromise;
-    
+  
       if (!stripe) {
         console.error('Stripe не загрузился!');
         alert('Платёжная система не готова. Попробуйте позже.');
         return;
       }
-    
+  
       const result = await stripe.redirectToCheckout({ sessionId: data.sessionId });
       if (result.error) {
         console.error('Ошибка перенаправления в Stripe:', result.error);
         alert('Ошибка при переходе к оплате: ' + result.error.message);
       }
+  
     } catch (error) {
       console.error('❌ Ошибка при создании Stripe-сессии:', error);
       alert('Ошибка при создании оплаты. Попробуйте позже.');
     }
+  };
+  
     
 
   const tileClassName = ({ date }) => {
