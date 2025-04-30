@@ -1,26 +1,20 @@
-body {
-  background-color: #f5f5ff;
-  font-family: 'Poppins', sans-serif;
-  margin: 0;
-  padding: 0;
-}
 
 .booking-container {
   max-width: 500px;
-  margin: 0 auto;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 245, 255, 0.9));
-  border: 2px solid #b08aff;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 8px 20px rgba(176, 138, 255, 0.3);
-  backdrop-filter: blur(4px);
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin: 40px auto;
+  padding: 25px;
+  border: 2px solid #b084f6;
+  border-radius: 20px;
+  background-color: #1e1e2f;
+  color: white;
+  box-shadow: 0 0 20px rgba(176, 132, 246, 0.3);
+  font-family: 'Arial', sans-serif;
 }
 
 .booking-title {
   text-align: center;
-  color: #6a0dad;
+  color: #df9fff;
+  font-size: 1.8rem;
   margin-bottom: 20px;
 }
 
@@ -28,23 +22,23 @@ body {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .language-selector button {
   background-color: transparent;
-  border: 1px solid #6a0dad;
-  color: #6a0dad;
-  padding: 5px 12px;
-  border-radius: 8px;
+  color: #df9fff;
+  border: 2px solid #df9fff;
+  padding: 5px 10px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: 0.3s;
 }
 
 .language-selector button.active-lang,
 .language-selector button:hover {
-  background-color: #6a0dad;
-  color: white;
+  background-color: #df9fff;
+  color: #1e1e2f;
 }
 
 .booking-form .form-group {
@@ -54,258 +48,100 @@ body {
 .booking-form label {
   display: block;
   margin-bottom: 5px;
-  color: #333;
+  color: #ccc;
 }
 
 .booking-form input,
 .booking-form select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #d6d6f5;
+  border: 1px solid #df9fff;
   border-radius: 8px;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.booking-form input:focus,
-.booking-form select:focus {
-  border-color: #6a0dad;
-}
-
-.submit-button {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(90deg, #ff8af4, #b08aff);
-  border: none;
+  background-color: #2e2e3e;
   color: white;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s ease;
-}
-
-.submit-button:hover {
-  background: linear-gradient(90deg, #b08aff, #ff8af4);
+  box-sizing: border-box;
 }
 
 .react-calendar {
+  background-color: #2e2e3e;
   border: none;
-  width: 100%;
-  background-color: transparent;
-}
-
-.react-calendar__tile {
-  border-radius: 50%;
-  padding: 10px 0;
-  text-align: center;
-  background-color: #f0f0f0;
-  color: #333;
-  opacity: 1;
-  transition: all 0.2s ease-in-out;
+  border-radius: 10px;
+  color: white;
+  padding: 10px;
+  margin-top: 10px;
 }
 
 .react-calendar__tile--now {
-  background-color: #ffe6ff !important;
-  font-weight: bold;
-}
-
-.react-calendar__tile.available-date {
-  background-color: #c3f7c3;
-  color: #006400;
+  background: #b084f6;
+  color: white;
 }
 
 .react-calendar__tile--active {
-  background-color: #6a0dad !important;
-  color: white !important;
+  background: #df9fff !important;
+  color: black !important;
 }
 
-.react-calendar__tile:disabled {
-  background-color: #f0f0f0 !important;
-  color: #999 !important;
-  cursor: default;
-  opacity: 1 !important;
+.available-date {
+  background: #8fff8f;
+  border-radius: 50%;
 }
 
 .selected-time {
-  text-align: center;
-  margin: 10px 0;
+  margin: 15px 0;
+  color: #8fff8f;
   font-weight: bold;
-  color: #6a0dad;
 }
 
 .agreement-block {
-  border: 2px solid #b08aff;
-  padding: 20px;
-  border-radius: 12px;
-  background-color: #fdfcff;
-  margin-top: 25px;
-  box-shadow: 0 4px 12px rgba(176, 138, 255, 0.2);
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  margin-top: 15px;
+  padding: 10px;
+  border: 2px solid #df9fff;
+  border-radius: 10px;
+  background-color: #2e2e3e;
 }
 
 .agreement-block label {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: 12px;
-  font-size: 1rem;
-  color: #333;
-  line-height: 1.5;
-  text-align: left;
-}
-
-.agreement-block input[type="checkbox"] {
-  margin-top: 4px;
-  cursor: pointer;
-  transform: scale(1.2);
-}
-
-.agreement-block a {
-  color: #6a0dad;
-  text-decoration: underline;
-  font-weight: 500;
-}
-
-.policy-details {
-  margin: 0.5rem 0;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.policy-details summary {
-  font-weight: bold;
-  cursor: pointer;
-  color: #6a4caf;
-}
-
-.policy-text {
-  white-space: pre-wrap;
-  background: #f9f9f9;
-  border-left: 4px solid #6a4caf;
-  padding: 1rem;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: #333;
+  display: block;
+  margin: 10px 0;
+  color: #ccc;
 }
 
 .inline-policy {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  margin-bottom: 0.75rem;
+  gap: 10px;
 }
 
-.inline-details {
-  display: inline;
-}
-
-.inline-summary {
-  display: inline;
-  color: #6a4caf;
+.submit-button {
+  background: linear-gradient(90deg, #ff85e4, #a48eff);
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 15px;
   cursor: pointer;
-  text-decoration: underline;
+  width: 100%;
+  font-size: 1.1rem;
+  transition: 0.3s;
 }
 
-.inline-policy-text {
-  white-space: pre-wrap;
-  font-size: 0.85rem;
-  padding: 0.75rem 0 0 1.25rem;
-  color: #333;
-  line-height: 1.5;
+.submit-button:hover {
+  background: linear-gradient(90deg, #a48eff, #ff85e4);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .booking-container {
-    padding: 12px;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    border-top: 1px solid #b08aff;
-    border-bottom: 1px solid #b08aff;
-    max-width: 100vw;
-    width: 100%;
+    margin: 20px;
+    padding: 20px;
   }
 
-  .language-selector button {
-    padding: 5px 8px;
-    font-size: 0.9rem;
+  .language-selector {
+    flex-wrap: wrap;
   }
 
   .submit-button {
-    padding: 10px;
-    font-size: 0.95rem;
-  }
-
-  .booking-form input,
-  .booking-form select {
-    padding: 8px;
-    font-size: 0.9rem;
-  }
-
-  .react-calendar__tile {
-    padding: 8px 0;
-    font-size: 0.8rem;
-  }
-
-  .agreement-block {
-    padding: 12px;
-  }
-
-  .agreement-block label {
-    gap: 8px;
-    font-size: 0.85rem;
-    line-height: 1.3;
-  }
-
-  .selected-time {
-    font-size: 0.9rem;
-  }
-
-  .policy-text,
-  .inline-policy-text {
-    font-size: 0.8rem;
-    padding-left: 1rem;
-  }
-}
-
-.react-calendar__navigation {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  font-size: 1rem;
-  color: #6a0dad;
-}
-
-.react-calendar__navigation button {
-  background: none;
-  border: none;
-  color: #6a0dad;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-@media (max-width: 480px) {
-  .react-calendar__navigation {
-    font-size: 0.9rem;
-  }
-
-  .react-calendar__navigation button {
     font-size: 1rem;
+    padding: 10px;
   }
-}
-
-.react-calendar__tile abbr {
-  color: #333 !important;
-  font-weight: 500;
-}
-
-.react-calendar__tile--active abbr {
-  color: white !important;
-  font-weight: bold;
 }

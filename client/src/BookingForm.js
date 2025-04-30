@@ -8,6 +8,13 @@ import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe('pk_test_51RJGQqGxtq8EnrYWvJDGwcixbAOseYMlOeRoPXRNZlBDMlmqOZwZQeZvoviA6rhkshmUcVuCTvW9tAjkZZVs5aTF00fn7m4ulh');
 
+const formatLocalDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 function BookingForm() {
   const [formData, setFormData] = useState({
     name: '',
@@ -18,6 +25,7 @@ function BookingForm() {
     agreePolicy: false,
     agreePrepayment: false,
   });
+
   const [availableDates, setAvailableDates] = useState([]);
   const [language, setLanguage] = useState('de');
   const t = translations[language];
@@ -47,6 +55,7 @@ function BookingForm() {
       alert(t.agreementError);
       return;
     }
+
     if (!formData.dateId) {
       alert(t.fillError);
       return;
@@ -58,9 +67,7 @@ function BookingForm() {
 
       const response = await fetch('https://videographer-booking-server.onrender.com/create-checkout-session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
         mode: 'cors',
       });
@@ -93,12 +100,12 @@ function BookingForm() {
   };
 
   const tileClassName = ({ date }) => {
-    const formatted = date.toISOString().split('T')[0];
+    const formatted = formatLocalDate(date);
     return availableDates.some((d) => d.date === formatted) ? 'available-date' : null;
   };
 
   const handleDateSelect = (selectedDate) => {
-    const formatted = selectedDate.toISOString().split('T')[0];
+    const formatted = formatLocalDate(selectedDate);
     const selected = availableDates.find((d) => d.date === formatted);
     console.log('🗓 Выбрана дата:', selected);
     setFormData({
