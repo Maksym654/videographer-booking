@@ -1,171 +1,201 @@
 .admin-panel {
-    padding: 2rem;
-    font-family: 'Poppins', Arial, sans-serif;
-    background-color: #f9f9ff;
-    color: #333;
-    max-width: 800px;
-    margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Poppins', Arial, sans-serif;
+  background-color: #f9f9ff;
+  color: #333;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.admin-panel h1 {
+  text-align: center;
+  color: #6a0dad;
+  margin-bottom: 1.5rem;
+}
+
+.admin-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  gap: 10px;
+}
+
+.admin-tabs button {
+  padding: 10px 18px;
+  border: none;
+  background-color: #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.admin-tabs button.active {
+  background-color: #a56cf4;
+  color: white;
+}
+
+.admin-tabs button:hover {
+  background-color: #b58ff7;
+  color: white;
+}
+
+.admin-content {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+}
+
+ol {
+  padding-left: 20px;
+}
+
+li {
+  background-color: #f3f1fb;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-left: 4px solid #a56cf4;
+  border-radius: 6px;
+  list-style-position: inside;
+}
+
+li div {
+  margin-bottom: 4px;
+}
+
+/* 🟢 Новый стиль для ClientsManager */
+.clients-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.client-card {
+  background-color: #fdfcff;
+  border: 2px solid #b08aff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(176, 138, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.client-card strong {
+  color: #6a0dad;
+}
+
+.client-card .bookings-list {
+  margin-top: 10px;
+}
+
+.booking-item {
+  background-color: #f3f1fb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.edit-form input {
+  margin: 5px 0;
+  padding: 8px;
+  width: 100%;
+  border: 1px solid #d6d6f5;
+  border-radius: 8px;
+}
+
+.edit-form button {
+  margin-right: 8px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #6a0dad;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.edit-form button:hover {
+  background-color: #a56cf4;
+}
+
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sort-controls select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* 🟡 Адаптация под мобильные устройства */
+@media (max-width: 600px) {
+  .admin-panel {
+    padding: 1rem;
   }
-  
-  .admin-panel h1 {
-    text-align: center;
-    color: #6a0dad;
-    margin-bottom: 1.5rem;
-  }
-  
+
   .admin-tabs {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-    gap: 10px;
+    flex-direction: column;
+    align-items: center;
   }
-  
+
   .admin-tabs button {
-    padding: 10px 18px;
-    border: none;
-    background-color: #ddd;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.3s ease, color 0.3s ease;
+    width: 100%;
   }
-  
-  .admin-tabs button.active {
-    background-color: #a56cf4;
-    color: white;
+
+  .edit-form input {
+    font-size: 0.9rem;
   }
-  
-  .admin-tabs button:hover {
-    background-color: #b58ff7;
-    color: white;
+
+  .edit-form button {
+    width: 48%;
+    margin-bottom: 5px;
   }
-  
-  .admin-content {
-    background-color: #ffffff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+
+  .sort-controls {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  ol {
-    padding-left: 20px;
+
+  .booking-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  
-  li {
-    background-color: #f3f1fb;
-    padding: 10px 15px;
-    margin-bottom: 10px;
-    border-left: 4px solid #a56cf4;
-    border-radius: 6px;
-    list-style-position: inside;
+
+  .client-card {
+    padding: 12px;
+    font-size: 0.95rem;
   }
-  
-  li div {
+
+  .client-info-row {
+    display: block;
     margin-bottom: 4px;
   }
-  
-  /* 🟢 Новый стиль для ClientsManager */
-  .clients-manager {
+
+  .client-stats {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 4px;
   }
-  
-  .client-card {
-    background-color: #fdfcff;
-    border: 2px solid #b08aff;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 12px rgba(176, 138, 255, 0.2);
-  }
-  
-  .client-card strong {
-    color: #6a0dad;
-  }
-  
-  .client-card .bookings-list {
-    margin-top: 10px;
-  }
-  
-  .booking-item {
-    background-color: #f3f1fb;
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-top: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .edit-form input {
-    margin: 5px 0;
-    padding: 8px;
+
+  .add-client-form input {
     width: 100%;
-    border: 1px solid #d6d6f5;
-    border-radius: 8px;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
   }
-  
-  .edit-form button {
-    margin-right: 8px;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 8px;
-    background-color: #6a0dad;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s ease;
+
+  .add-client-form button {
+    width: 100%;
+    font-size: 1rem;
+    padding: 10px;
   }
-  
-  .edit-form button:hover {
-    background-color: #a56cf4;
-  }
-  
-  .sort-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .sort-controls select {
-    padding: 6px 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
-  
-  /* 🟡 Адаптация под мобильные устройства */
-  @media (max-width: 600px) {
-    .admin-panel {
-      padding: 1rem;
-    }
-  
-    .admin-tabs {
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .admin-tabs button {
-      width: 100%;
-    }
-  
-    .edit-form input {
-      font-size: 0.9rem;
-    }
-  
-    .edit-form button {
-      width: 48%;
-      margin-bottom: 5px;
-    }
-  
-    .sort-controls {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .booking-item {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  }
-  
+}
