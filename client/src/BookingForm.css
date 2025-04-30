@@ -1,147 +1,154 @@
+/* BookingForm.css */
+
+body {
+  background-color: #111;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
 
 .booking-container {
-  max-width: 500px;
-  margin: 40px auto;
-  padding: 25px;
-  border: 2px solid #b084f6;
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  border: 2px solid #b084f9;
   border-radius: 20px;
-  background-color: #1e1e2f;
-  color: white;
-  box-shadow: 0 0 20px rgba(176, 132, 246, 0.3);
-  font-family: 'Arial', sans-serif;
+  background-color: #1a1a1a;
+  color: #fff;
+  box-shadow: 0 0 10px #b084f9;
 }
 
 .booking-title {
   text-align: center;
-  color: #df9fff;
-  font-size: 1.8rem;
   margin-bottom: 20px;
+  color: #e57cf5;
 }
 
 .language-selector {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+  text-align: center;
   margin-bottom: 20px;
 }
 
 .language-selector button {
-  background-color: transparent;
-  color: #df9fff;
-  border: 2px solid #df9fff;
+  margin: 0 5px;
   padding: 5px 10px;
-  border-radius: 10px;
+  border: 1px solid #b084f9;
+  background: transparent;
+  color: white;
+  border-radius: 6px;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-.language-selector button.active-lang,
-.language-selector button:hover {
-  background-color: #df9fff;
-  color: #1e1e2f;
+.language-selector .active-lang {
+  background-color: #b084f9;
+  color: black;
 }
 
-.booking-form .form-group {
+.booking-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
   margin-bottom: 15px;
 }
 
-.booking-form label {
-  display: block;
-  margin-bottom: 5px;
-  color: #ccc;
-}
-
-.booking-form input,
-.booking-form select {
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #df9fff;
   border-radius: 8px;
-  background-color: #2e2e3e;
+  border: 1px solid #ccc;
+  background-color: #222;
   color: white;
   box-sizing: border-box;
 }
 
 .react-calendar {
-  background-color: #2e2e3e;
-  border: none;
-  border-radius: 10px;
+  width: 100%;
+  background-color: #1a1a1a;
   color: white;
-  padding: 10px;
-  margin-top: 10px;
+  border: none;
+  font-family: Arial, sans-serif;
+}
+
+.react-calendar__tile {
+  padding: 10px 0;
+  background: #222;
+  border-radius: 8px;
+  color: white;
 }
 
 .react-calendar__tile--now {
-  background: #b084f6;
-  color: white;
+  background: #444;
 }
 
 .react-calendar__tile--active {
-  background: #df9fff !important;
-  color: black !important;
+  background: #b084f9;
+  color: white;
 }
 
 .available-date {
-  background: #8fff8f;
-  border-radius: 50%;
+  background-color: #28a745 !important;
+  color: white !important;
 }
 
 .selected-time {
-  margin: 15px 0;
-  color: #8fff8f;
+  margin: 10px 0;
   font-weight: bold;
+  color: #b084f9;
+  text-align: center;
 }
 
 .agreement-block {
-  margin-top: 15px;
+  border: 1px solid #b084f9;
   padding: 10px;
-  border: 2px solid #df9fff;
   border-radius: 10px;
-  background-color: #2e2e3e;
+  margin-bottom: 20px;
+  background-color: #222;
 }
 
 .agreement-block label {
   display: block;
-  margin: 10px 0;
-  color: #ccc;
+  margin-bottom: 10px;
+  color: #ddd;
+  font-size: 0.95em;
 }
 
 .inline-policy {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
 }
 
 .submit-button {
-  background: linear-gradient(90deg, #ff85e4, #a48eff);
-  color: black;
-  font-weight: bold;
+  padding: 12px;
   border: none;
   border-radius: 10px;
-  padding: 12px;
-  margin-top: 15px;
+  background: linear-gradient(to right, #ff77e9, #a678f5);
+  color: white;
+  font-size: 1.1em;
+  font-weight: bold;
   cursor: pointer;
-  width: 100%;
-  font-size: 1.1rem;
-  transition: 0.3s;
-}
-
-.submit-button:hover {
-  background: linear-gradient(90deg, #a48eff, #ff85e4);
 }
 
 @media (max-width: 600px) {
   .booking-container {
-    margin: 20px;
-    padding: 20px;
+    margin: 10px;
+    padding: 15px;
+    border-radius: 16px;
   }
 
-  .language-selector {
-    flex-wrap: wrap;
+  .react-calendar__tile {
+    padding: 5px 0;
+    font-size: 0.8em;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 0.95em;
   }
 
   .submit-button {
-    font-size: 1rem;
-    padding: 10px;
+    font-size: 1em;
   }
 }
