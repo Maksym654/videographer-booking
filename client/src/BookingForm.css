@@ -6,13 +6,16 @@ body {
 }
 
 .booking-container {
-  max-width: 100%;
-  margin: 0;
-  background-color: #fff;
-  border: none;
-  border-radius: 0;
+  max-width: 500px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 245, 255, 0.9));
+  border: 2px solid #b08aff;
+  border-radius: 15px;
   padding: 20px;
-  box-shadow: none;
+  box-shadow: 0 8px 20px rgba(176, 138, 255, 0.3);
+  backdrop-filter: blur(4px);
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .booking-title {
@@ -91,24 +94,6 @@ body {
   background-color: transparent;
 }
 
-.react-calendar__navigation {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  font-size: 1rem;
-  color: #6a0dad;
-}
-
-.react-calendar__navigation button {
-  background: none;
-  border: none;
-  color: #6a0dad;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
 .react-calendar__tile {
   border-radius: 50%;
   padding: 10px 0;
@@ -139,16 +124,6 @@ body {
   color: #999 !important;
   cursor: default;
   opacity: 1 !important;
-}
-
-.react-calendar__tile abbr {
-  color: #333 !important;
-  font-weight: 500;
-}
-
-.react-calendar__tile--active abbr {
-  color: white !important;
-  font-weight: bold;
 }
 
 .selected-time {
@@ -245,11 +220,14 @@ body {
 
 @media (max-width: 480px) {
   .booking-container {
-    width: 100vw;
-    height: 100%;
+    padding: 12px;
     border-radius: 0;
-    padding: 15px;
-    box-sizing: border-box;
+    border-left: none;
+    border-right: none;
+    border-top: 1px solid #b08aff;
+    border-bottom: 1px solid #b08aff;
+    max-width: 100vw;
+    width: 100%;
   }
 
   .language-selector button {
@@ -273,14 +251,6 @@ body {
     font-size: 0.8rem;
   }
 
-  .react-calendar__navigation {
-    font-size: 0.9rem;
-  }
-
-  .react-calendar__navigation button {
-    font-size: 1rem;
-  }
-
   .agreement-block {
     padding: 12px;
   }
@@ -300,4 +270,42 @@ body {
     font-size: 0.8rem;
     padding-left: 1rem;
   }
+}
+
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #6a0dad;
+}
+
+.react-calendar__navigation button {
+  background: none;
+  border: none;
+  color: #6a0dad;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .react-calendar__navigation {
+    font-size: 0.9rem;
+  }
+
+  .react-calendar__navigation button {
+    font-size: 1rem;
+  }
+}
+
+.react-calendar__tile abbr {
+  color: #333 !important;
+  font-weight: 500;
+}
+
+.react-calendar__tile--active abbr {
+  color: white !important;
+  font-weight: bold;
 }
