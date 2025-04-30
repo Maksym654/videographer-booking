@@ -68,20 +68,31 @@ function BookingForm() {
       console.log('📥 Ответ от сервера:', response);
   
       const data = await response.json();
+      console.log('📦 Получен ответ от сервера:', data);
+      
       const stripe = await stripePromise;
-  
+      
       if (!stripe) {
         console.error('Stripe не загрузился!');
         alert('Платёжная система не готова. Попробуйте позже.');
         return;
       }
-  
+      
+      if (!data.sessionId) {
+        console.error('❗ sessionId отсутствует в ответе сервера!');
+        alert('Ошибка: sessionId не получен. Проверь сервер.');
+        return;
+      }
+      
+      console.log('➡️ Переход к Stripe с sessionId:', data.sessionId);
+      
       const result = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-      if (result.error) {
-        console.error('Ошибка перенаправления в Stripe:', result.error);
+      
+      if (result?.error) {
+        console.error('Ошибка при переходе в Stripe:', result.error);
         alert('Ошибка при переходе к оплате: ' + result.error.message);
       }
-  
+      
     } catch (error) {
       console.error('❌ Ошибка при создании Stripe-сессии:', error);
       alert('Ошибка при создании оплаты. Попробуйте позже.');
