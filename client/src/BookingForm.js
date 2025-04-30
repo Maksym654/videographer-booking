@@ -54,6 +54,8 @@ function BookingForm() {
 
     try {
       localStorage.setItem('bookingFormData', JSON.stringify(formData));
+      console.log('📤 Отправка на сервер:', formData);
+
       const response = await fetch('https://videographer-booking-server.onrender.com/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -62,6 +64,9 @@ function BookingForm() {
         body: JSON.stringify(formData),
         mode: 'cors',
       });
+      
+      console.log('📥 Ответ от сервера:', response);
+    };
     
       const data = await response.json();
       const stripe = await stripePromise;
