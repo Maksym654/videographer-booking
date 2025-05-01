@@ -1,16 +1,13 @@
-// ClientsManager.js — обновлённый с учётом правок UI и логики
+// ClientsManager.js — без translations
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import './ClientsManager.css';
-import translations from '../translations';
 
 const ClientsManager = () => {
   const [clients, setClients] = useState([]);
   const [editingClientId, setEditingClientId] = useState(null);
   const [editedClient, setEditedClient] = useState({});
   const [expandedClientId, setExpandedClientId] = useState(null);
-
-  const lang = 'ru';
 
   useEffect(() => {
     const unsubscribe = db.collection('clients').onSnapshot(snapshot => {
@@ -67,19 +64,14 @@ const ClientsManager = () => {
     return bookings.filter(b => b.status === 'pending').length;
   };
 
-  const getTypeLabel = (type) => {
-    const ruTypes = translations['ru'].shootTypes;
-    return ruTypes[type] || type;
-  };
-
   return (
     <div className="clients-wrapper">
       {clients.map(client => (
-        <div
-          key={client.id}
-          className="client-card"
-        >
-          <div className="client-summary" onClick={() => setExpandedClientId(client.id === expandedClientId ? null : client.id)}>
+        <div key={client.id} className="client-card">
+          <div
+            className="client-summary"
+            onClick={() => setExpandedClientId(client.id === expandedClientId ? null : client.id)}
+          >
             <p><strong>Имя:</strong> {client.name}</p>
             <p><strong>Телефон:</strong> {client.phone}</p>
             <p><strong>Email:</strong> {client.email}</p>
@@ -116,7 +108,7 @@ const ClientsManager = () => {
                 {client.bookings.map((b, index) => (
                   <div key={index} className="booking-item">
                     <div className="booking-info">
-                      <span>{new Date(b.date).toLocaleDateString()} | {getTypeLabel(b.product)} |</span>
+                      <span>{new Date(b.date).toLocaleDateString()} | {b.product} |</span>
                       <span><strong>Сумма:</strong> {b.amount || 0}€</span>
                     </div>
                     {b.paymentDate && (
