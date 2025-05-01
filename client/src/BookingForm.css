@@ -81,11 +81,13 @@ body {
   margin: 4px;
   text-align: center;
 }
-.react-calendar__tile--now {
-  background-color: #b084f7 !important;
-}
 .react-calendar__tile--active {
-  background-color: #6a0dad !important;
+  background-color: #b084f7 !important; /* теперь активная дата ярко-сиреневая */
+  color: #fff !important;
+}
+
+.react-calendar__tile--now {
+  background-color: #5f4b8b !important; /* приглушённая для текущей даты */
   color: #fff !important;
 }
 .react-calendar__tile.available-date {
