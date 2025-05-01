@@ -219,32 +219,25 @@ body {
     font-size: 0.95rem;
   }
 }
-/* Скрыть двойные стрелки */
+
+/* Календарная навигация */
+.react-calendar__navigation__label {
+  pointer-events: none;
+  cursor: default;
+  background: transparent !important;
+  color: #b08aff !important;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  box-shadow: none;
+}
 .react-calendar__navigation__prev2-button,
 .react-calendar__navigation__next2-button {
   display: none !important;
 }
-
-/* Стили для навигации */
-.react-calendar__navigation {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.react-calendar__navigation__label {
-  font-weight: bold;
-  font-size: 1rem;
-  color: #b08aff;
-  background: transparent;
-  border: none;
-}
-
-/* Стили для стрелок */
 .react-calendar__navigation__prev-button,
 .react-calendar__navigation__next-button {
-  background-color: #3a2d5f; /* тёмно-фиолетовый */
+  background-color: transparent;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 16px 16px;
@@ -256,17 +249,12 @@ body {
   transition: background-color 0.3s ease;
   border-radius: 50%;
 }
-
-/* Левая стрелка (SVG) */
 .react-calendar__navigation__prev-button {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23ffffff' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23b08aff' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/></svg>");
 }
-/* Правая стрелка (SVG) */
 .react-calendar__navigation__next-button {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23ffffff' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23b08aff' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z'/></svg>");
 }
-
-/* Hover эффекты */
 .react-calendar__navigation__prev-button:hover,
 .react-calendar__navigation__next-button:hover {
   background-color: rgba(176, 138, 255, 0.2);
