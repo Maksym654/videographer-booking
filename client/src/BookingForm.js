@@ -51,7 +51,7 @@ function BookingForm() {
 
     try {
       localStorage.setItem('bookingFormData', JSON.stringify(formData));
-      const response = await fetch('http://localhost:4242/create-checkout-session', {
+      const response = await fetch('https://videographer-booking-server.onrender.com/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
