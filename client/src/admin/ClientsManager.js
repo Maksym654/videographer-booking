@@ -1,143 +1,219 @@
-// ClientsManager.js — обновлённый с учётом правок
 import React, { useState, useEffect } from 'react';
-import { getBookings, updateClient, addBookingToClient } from '../services/firebaseService';
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import './ClientsManager.css';
 import translations from '../translations';
 
 const ClientsManager = () => {
   const [clients, setClients] = useState([]);
   const [expandedClientId, setExpandedClientId] = useState(null);
-  const [editModeClientId, setEditModeClientId] = useState(null);
-  const [newBooking, setNewBooking] = useState({ date: '', startTime: '', endTime: '', product: '', payment: '', status: 'Ожидается' });
-  const [language] = useState('de');
-  const t = translations[language];
+  const [editClientId, setEditClientId] = useState(null);
+  const [formValues, setFormValues] = useState({});
+  const t = translations['ru'];
 
   useEffect(() => {
-    const fetchData = async () => {
-      const allBookings = await getBookings();
-      const grouped = groupBookingsByClient(allBookings);
-      setClients(grouped);
+    const fetchClients = async () => {
+      const snapshot = await getDocs(collection(db, 'clients'));
+      const clientsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setClients(clientsData);
     };
-    fetchData();
+    fetchClients();
   }, []);
 
-  const groupBookingsByClient = (bookings) => {
-    const map = {};
-    bookings.forEach(b => {
-      const key = b.email || b.phone;
-      if (!map[key]) {
-        map[key] = {
-          name: b.name,
-          phone: b.phone,
-          email: b.email,
-          bookings: [],
-          total: 0,
-          pending: 0,
-        };
-      }
-      map[key].bookings.push(b);
-      if (b.payment) map[key].total += parseFloat(b.payment);
-      if (b.status === 'Ожидается') map[key].pending++;
-    });
-    return Object.values(map);
+  const toggleExpand = (clientId) => {
+    setExpandedClientId(expandedClientId === clientId ? null : clientId);
   };
 
-  const toggleClient = (client) => {
-    setExpandedClientId(expandedClientId === client.email ? null : client.email);
-  };
-
-  const startEdit = (client) => {
-    setEditModeClientId(client.email);
-  };
-
-  const saveClient = async (client, index) => {
-    const updated = { ...client };
-    await updateClient(updated);
-    const updatedClients = [...clients];
-    updatedClients[index] = updated;
-    setClients(updatedClients);
-    setEditModeClientId(null);
-  };
-
-  const handleInputChange = (e, clientIndex, field) => {
-    const updatedClients = [...clients];
-    updatedClients[clientIndex][field] = e.target.value;
-    setClients(updatedClients);
-  };
-
-  const handleBookingChange = (e, field) => {
-    setNewBooking({ ...newBooking, [field]: e.target.value });
-  };
-
-  const addBooking = async (client, index) => {
-    const booking = {
-      ...newBooking,
+  const handleEditClick = (client) => {
+    setEditClientId(client.id);
+    setFormValues({
       name: client.name,
       phone: client.phone,
       email: client.email,
-      createdAt: new Date().toISOString(),
-    };
-    if (!booking.product) return alert('Выберите тип съёмки');
-    await addBookingToClient(booking);
-    const updated = [...clients];
-    updated[index].bookings.push(booking);
-    setClients(updated);
-    setNewBooking({ date: '', startTime: '', endTime: '', product: '', payment: '', status: 'Ожидается' });
+    });
+  };
+
+  const handleSaveClient = async (clientId) => {
+    const clientRef = doc(db, 'clients', clientId);
+    await updateDoc(clientRef, {
+      name: formValues.name,
+      phone: formValues.phone,
+      email: formValues.email,
+    });
+    setEditClientId(null);
+    location.reload(); // обновим данные
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  };
+
+  const getTotal = (bookings) =>
+    bookings.reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
+
+  const getPendingCount = (bookings) =>
+    bookings.filter((b) => b.status !== 'done').length;
+
+  const handleStatusToggle = async (clientId, bookingIndex) => {
+    const updatedClients = [...clients];
+    const client = updatedClients.find((c) => c.id === clientId);
+    const booking = client.bookings[bookingIndex];
+    booking.status = booking.status === 'done' ? 'pending' : 'done';
+    setClients(updatedClients);
+
+    await updateDoc(doc(db, 'clients', clientId), {
+      bookings: client.bookings,
+    });
+  };
+
+  const handleBookingChange = (clientId, index, field, value) => {
+    const updatedClients = [...clients];
+    updatedClients
+      .find((c) => c.id === clientId)
+      .bookings[index][field] = value;
+    setClients(updatedClients);
+  };
+
+  const handleAddBooking = async (clientId, newBooking) => {
+    if (!newBooking.product || !newBooking.amount) return;
+
+    const updatedClients = [...clients];
+    const client = updatedClients.find((c) => c.id === clientId);
+    client.bookings.push({
+      ...newBooking,
+      status: 'pending',
+    });
+
+    await updateDoc(doc(db, 'clients', clientId), {
+      bookings: client.bookings,
+    });
+
+    setClients(updatedClients);
   };
 
   return (
-    <div className="clients-container">
-      {clients.map((client, index) => (
-        <div key={client.email || client.phone} className="client-card">
-          <div className="client-header" onClick={() => toggleClient(client)}>
-            {editModeClientId === client.email ? (
-              <>
-                <input value={client.name} onChange={(e) => handleInputChange(e, index, 'name')} />
-                <input value={client.phone} onChange={(e) => handleInputChange(e, index, 'phone')} />
-                <input value={client.email} onChange={(e) => handleInputChange(e, index, 'email')} />
-                <button onClick={() => saveClient(client, index)}>💾</button>
-              </>
-            ) : (
-              <>
-                <span>{client.name}</span>
-                <span>{client.phone}</span>
-                <span>{client.email}</span>
-                <span className="edit-icon" onClick={(e) => { e.stopPropagation(); startEdit(client); }}>✏️</span>
-              </>
-            )}
-            <div className="summary-line">
-              Общая сумма: {client.total}€ | Ожидается: {client.pending}
-            </div>
-          </div>
+    <div className="clients-manager">
+      {clients.map((client) => {
+        const total = getTotal(client.bookings || []);
+        const pending = getPendingCount(client.bookings || []);
+        const isExpanded = expandedClientId === client.id;
+        const isEditing = editClientId === client.id;
 
-          {expandedClientId === client.email && (
-            <div className="client-bookings">
-              <h4>Брони:</h4>
-              {client.bookings.map((b, i) => (
-                <div key={i} className="booking-item">
-                  <div>{b.date} — {b.startTime}-{b.endTime} | {b.product}</div>
-                  <div className="booking-payment">Сумма: {b.payment || ''}€</div>
-                  {b.paymentDate && (
-                    <div className="booking-note">Оплачено через Stripe: {new Date(b.paymentDate).toLocaleString()}</div>
-                  )}
-                </div>
-              ))}
-
-              <div className="booking-form">
-                <input placeholder="Дата" value={newBooking.date} onChange={(e) => handleBookingChange(e, 'date')} />
-                <input placeholder="Время начала" value={newBooking.startTime} onChange={(e) => handleBookingChange(e, 'startTime')} />
-                <input placeholder="Время окончания" value={newBooking.endTime} onChange={(e) => handleBookingChange(e, 'endTime')} />
-                <select value={newBooking.product} onChange={(e) => handleBookingChange(e, 'product')}>
-                  <option value="">Тип съёмки</option>
-                  {t.types.map((type, idx) => <option key={idx} value={type}>{type}</option>)}
-                </select>
-                <input placeholder="Сумма" value={newBooking.payment} onChange={(e) => handleBookingChange(e, 'payment')} />
-                <button onClick={() => addBooking(client, index)}>Сохранить</button>
+        return (
+          <div key={client.id} className="client-card">
+            <div className="client-summary" onClick={() => toggleExpand(client.id)}>
+              <div>
+                <strong>Имя:</strong> {client.name} <br />
+                <strong>Телефон:</strong> {client.phone} <br />
+                <strong>Email:</strong> {client.email} <br />
+                <strong>Общая сумма:</strong> {total}€
               </div>
+              <div>
+                <span className="pending-count">
+                  Ожидает заказов: {pending}
+                </span>
+                <br />
+                <span className="total-count">Всего заказов: {client.bookings?.length || 0}</span>
+              </div>
+              <button
+                className="edit-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditClick(client);
+                }}
+              >
+                ✏️
+              </button>
             </div>
-          )}
-        </div>
-      ))}
+
+            {isExpanded && (
+              <div className="client-details">
+                {isEditing && (
+                  <div className="edit-fields">
+                    <input
+                      name="name"
+                      value={formValues.name}
+                      onChange={handleInputChange}
+                    />
+                    <input
+                      name="phone"
+                      value={formValues.phone}
+                      onChange={handleInputChange}
+                    />
+                    <input
+                      name="email"
+                      value={formValues.email}
+                      onChange={handleInputChange}
+                    />
+                    <button onClick={() => handleSaveClient(client.id)}>Сохранить изменения</button>
+                  </div>
+                )}
+
+                <h4>Брони:</h4>
+                {client.bookings?.map((b, idx) => (
+                  <div key={idx} className="booking-entry">
+                    <div>
+                      {b.date} {b.startTime && ` ${b.startTime} - ${b.endTime || ''}`} | {b.product} |
+                      <strong> Сумма: </strong> {b.amount}€
+                    </div>
+                    {b.paymentDate && (
+                      <div className="payment-info">
+                        ✅ Бронь оплачена через Stripe {b.paymentDate}, сумма: {b.paymentAmount || 50}€
+                      </div>
+                    )}
+                    <input
+                      value={b.amount}
+                      onChange={(e) =>
+                        handleBookingChange(client.id, idx, 'amount', e.target.value)
+                      }
+                    />
+                    <button
+                      className={b.status === 'done' ? 'done' : 'pending'}
+                      onClick={() => handleStatusToggle(client.id, idx)}
+                    >
+                      {b.status === 'done' ? 'Обработан' : 'Ожидается'}
+                    </button>
+                  </div>
+                ))}
+
+                <h5>Добавить новую бронь:</h5>
+                <AddBookingForm clientId={client.id} onAdd={handleAddBooking} />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const AddBookingForm = ({ clientId, onAdd }) => {
+  const [product, setProduct] = useState('');
+  const [amount, setAmount] = useState('');
+
+  const handleAdd = () => {
+    onAdd(clientId, { product, amount });
+    setProduct('');
+    setAmount('');
+  };
+
+  return (
+    <div className="add-booking-form">
+      <input
+        placeholder="Тип съёмки"
+        value={product}
+        onChange={(e) => setProduct(e.target.value)}
+      />
+      <input
+        placeholder="Сумма оплаты"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
+      <button onClick={handleAdd}>Добавить бронь</button>
     </div>
   );
 };
