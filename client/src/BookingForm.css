@@ -280,3 +280,29 @@ input:focus, select:focus {
 .agreement-block details summary:hover {
   text-decoration: underline;
 }
+/* Новое: стили для <details> блока политики */
+.agreement-block details summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.agreement-block details summary::-webkit-details-marker {
+  display: none;
+}
+
+.agreement-block details summary label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.agreement-block details summary:hover {
+  text-decoration: underline;
+}
+
+/* Удаляем (+/-), которые раньше вручную добавлялись */
+.policy-details-button {
+  display: none;
+}

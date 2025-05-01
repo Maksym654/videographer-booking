@@ -183,28 +183,22 @@ function BookingForm() {
         )}
 
         <div className="agreement-block">
-          <label className="inline-policy">
-            <input
-              type="checkbox"
-              checked={formData.agreePolicy}
-              onChange={(e) => setFormData({ ...formData, agreePolicy: e.target.checked })}
-            />
-            <span>
-              {t.agreeData}&nbsp;
-              <button
-                type="button"
-                className="policy-details-button"
-                onClick={() => setShowPolicy(!showPolicy)}
-              >
-                ({showPolicy ? '-' : '+'})
-              </button>
-            </span>
-          </label>
-          {showPolicy && (
-            <div className="policy-text">
-              <pre>{t.policy}</pre>
-            </div>
-          )}
+        <details>
+  <summary>
+    <label>
+      <input
+        type="checkbox"
+        checked={formData.agreePolicy}
+        onChange={(e) => setFormData({ ...formData, agreePolicy: e.target.checked })}
+      />
+      <span>{t.agreeData}</span>
+    </label>
+  </summary>
+  <div className="policy-text">
+    <pre>{t.policy}</pre>
+  </div>
+</details>
+
 
           <label>
             <input
