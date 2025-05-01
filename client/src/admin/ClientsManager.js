@@ -1,4 +1,3 @@
-// ClientsManager.js — откат на SDK v8 стиль
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
 import './ClientsManager.css';
@@ -23,27 +22,26 @@ function ClientsManager() {
   const [newBooking, setNewBooking] = useState({ product: '', payment: '' });
 
   useEffect(() => {
-    fetchClients();
+    const unsubscribe = db.collection('clients').onSnapshot(snapshot => {
+      const rawClients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      const updatePromises = rawClients.map(async client => {
+        if (client.totalOrders === undefined) {
+          const totalOrders = (client.bookings || []).length;
+          await db.collection('clients').doc(client.id).update({ totalOrders });
+          client.totalOrders = totalOrders;
+        }
+        return client;
+      });
+
+      Promise.all(updatePromises).then(updatedClients => {
+        const mergedClients = mergeClients(updatedClients);
+        setClients(mergedClients);
+      });
+    });
+
+    return () => unsubscribe();
   }, []);
-
-  const fetchClients = async () => {
-    const snapshot = await db.collection('clients').get();
-    const rawClients = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-
-    for (const client of rawClients) {
-      if (client.totalOrders === undefined) {
-        const totalOrders = (client.bookings || []).length;
-        await db.collection('clients').doc(client.id).update({ totalOrders });
-        client.totalOrders = totalOrders;
-      }
-    }
-
-    const mergedClients = mergeClients(rawClients);
-    setClients(mergedClients);
-  };
 
   const mergeClients = (clientsArray) => {
     const merged = [];
@@ -79,13 +77,11 @@ function ClientsManager() {
     const totalSum = (editedData.bookings || []).reduce((sum, booking) => sum + (booking.payment || 0), 0);
     await db.collection('clients').doc(editClientId).update({ ...editedData, totalSum });
     setEditClientId(null);
-    fetchClients();
   };
 
   const handleDeleteClient = async (id) => {
     if (window.confirm('Удалить клиента?')) {
       await db.collection('clients').doc(id).delete();
-      fetchClients();
     }
   };
 
@@ -95,7 +91,6 @@ function ClientsManager() {
     bookings[bookingIdx].status = bookings[bookingIdx].status === 'done' ? 'pending' : 'done';
     const totalSum = bookings.reduce((sum, b) => sum + (b.payment || 0), 0);
     await db.collection('clients').doc(clientId).update({ bookings, totalSum });
-    fetchClients();
   };
 
   const handleBookingPaymentChange = (clientId, bookingIdx, value) => {
@@ -137,7 +132,6 @@ function ClientsManager() {
     });
 
     setNewBooking({ product: '', payment: '' });
-    fetchClients();
   };
 
   const handleAddNewClient = async () => {
@@ -162,7 +156,6 @@ function ClientsManager() {
     });
 
     setNewClient({ name: '', phone: '', email: '' });
-    fetchClients();
   };
 
   const sortedClients = [...clients].sort((a, b) => {
