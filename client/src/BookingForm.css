@@ -364,3 +364,40 @@ input, select, textarea {
   border: 2px solid #b084f7;
 }
 }
+
+.agreement-block {
+border: 2px solid #b08aff;
+padding: 20px;
+border-radius: 12px;
+background-color: #2a234a;
+margin-top: 25px;
+box-shadow: 0 4px 12px rgba(176, 138, 255, 0.2);
+display: flex;
+flex-direction: column;
+gap: 15px;
+}
+
+.agreement-block label {
+display: grid;
+grid-template-columns: auto 1fr;
+align-items: start;
+gap: 12px;
+font-size: 1rem;
+color: #f0f0f0;
+line-height: 1.5;
+text-align: left;
+}
+
+.agreement-block input[type="checkbox"] {
+margin-top: 4px;
+cursor: pointer;
+transform: scale(1.2);
+}
+
+@media (max-width: 480px) {
+.agreement-block label {
+  gap: 8px;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+}
