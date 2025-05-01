@@ -2,15 +2,15 @@
 .admin-panel {
   padding: 2rem;
   font-family: 'Poppins', Arial, sans-serif;
-  background-color: #f9f9ff;
-  color: #333;
+  background-color: #1e1e2f;
+  color: #fff;
   max-width: 800px;
   margin: 0 auto;
 }
 
 .admin-panel h1 {
   text-align: center;
-  color: #6a0dad;
+  color: #b08aff;
   margin-bottom: 1.5rem;
 }
 
@@ -25,10 +25,11 @@
 .admin-tabs button {
   padding: 10px 18px;
   border: none;
-  background-color: #ddd;
+  background-color: #3a3a50;
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
+  color: #f0f0f0;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
@@ -43,12 +44,13 @@
 }
 
 .admin-content {
-  background-color: #ffffff;
+  background-color: #2a2a3d;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
 }
 
+/* Адаптация для планшетов */
 @media (max-width: 600px) {
   .admin-panel {
     padding: 1rem;
@@ -64,11 +66,28 @@
   }
 }
 
+/* Адаптация для телефонов */
 @media (max-width: 480px) {
   .admin-panel {
     padding: 1rem;
     margin: 0;
     width: 100vw;
     box-sizing: border-box;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    box-sizing: border-box;
+  }
+
+  .admin-tabs button {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .admin-content {
+    padding: 1rem;
   }
 }
