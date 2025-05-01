@@ -1,10 +1,9 @@
-/* ClientsManager.css — стили для обновлённого ClientsManager */
-
-.clients-wrapper {
+.clients-manager {
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 20px;
+  color: white;
 }
 
 .client-card {
@@ -16,46 +15,21 @@
 }
 
 .client-summary {
-  position: relative;
   cursor: pointer;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
-.client-summary p {
-  margin: 5px 0;
-}
-
-.status-counts {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 5px;
-}
-
-.status-counts .pending {
-  color: orange;
-}
-
-.status-counts .completed {
-  color: green;
-}
-
-.edit-icon {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: none;
-  border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
-
-.edit-fields {
+.edit-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #888;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 10px;
 }
 
-.edit-fields input {
+.edit-section input {
   padding: 6px;
   border-radius: 6px;
   border: 1px solid #b08aff;
@@ -63,78 +37,130 @@
   color: #fff;
 }
 
-.edit-fields button {
+.edit-section button {
   background-color: #b08aff;
   border: none;
   padding: 8px 12px;
   border-radius: 6px;
   color: #fff;
   cursor: pointer;
-  align-self: flex-start;
+  width: fit-content;
 }
 
-.client-details {
-  margin-top: 10px;
+.delete-btn {
+  background-color: #a94442 !important;
 }
 
 .bookings-list {
   margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.booking-item {
+.booking-entry {
   background-color: #211c37;
   border: 1px solid #6f579e;
   border-radius: 8px;
   padding: 10px;
-  margin-bottom: 10px;
+  font-size: 0.95rem;
 }
 
-.booking-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
-
-.stripe-note {
-  color: #00c853;
-  font-size: 0.85rem;
-  margin-bottom: 5px;
-}
-
-.booking-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.booking-controls input[type="number"] {
-  width: 70px;
+.booking-entry input[type="number"] {
+  margin-top: 5px;
   padding: 5px;
+  width: 100px;
   border-radius: 5px;
   border: 1px solid #b08aff;
   background-color: #1e1b2e;
   color: white;
 }
 
-.booking-controls button {
-  padding: 5px 10px;
-  border: none;
+.status-button {
+  padding: 6px 12px;
   border-radius: 5px;
-  cursor: pointer;
+  margin-left: 10px;
   font-weight: bold;
+  border: none;
+  cursor: pointer;
 }
 
-.booking-controls .pending {
-  background-color: orange;
-  color: white;
-}
-
-.booking-controls .completed {
+.status-done {
   background-color: green;
   color: white;
 }
 
-.booking-controls .save-btn {
-  background-color: #888;
+.status-pending {
+  background-color: orange;
   color: white;
+}
+
+.add-booking-form {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px dashed #555;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-booking-form input {
+  padding: 6px;
+  border-radius: 5px;
+  border: 1px solid #b08aff;
+  background-color: #1e1b2e;
+  color: white;
+}
+
+.add-booking-form button {
+  background-color: #b08aff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.stripe-note {
+  color: #00c853;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
+
+.sort-controls {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-controls select {
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.new-client-form {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.new-client-form input {
+  padding: 6px;
+  border-radius: 5px;
+  border: 1px solid #b08aff;
+  background-color: #1e1b2e;
+  color: white;
+}
+
+.new-client-form button {
+  background-color: #b08aff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  width: fit-content;
 }
