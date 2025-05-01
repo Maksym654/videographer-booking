@@ -5,6 +5,7 @@ body, html {
   font-family: 'Poppins', sans-serif;
   background-color: #1e1b2e !important;
   color: #f0f0f0 !important;
+  box-sizing: border-box;
 }
 
 /* ====== Контейнер ====== */
@@ -128,14 +129,15 @@ body, html {
 }
 
 .agreement-block label {
-  display: flex;                /* заменили grid на flex */
+  display: flex;
   align-items: flex-start;
-  flex-wrap: nowrap;           /* запрещаем перенос */
-  gap: 10px;
+  gap: 12px;
   font-size: 1rem;
   color: #f0f0f0;
   line-height: 1.5;
   text-align: left;
+  word-break: break-word;
+  flex-wrap: wrap;
 }
 
 .agreement-block input[type="checkbox"] {
@@ -151,23 +153,51 @@ body, html {
   font-weight: 500;
 }
 
+/* ====== Детали политики ====== */
+.policy-details {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.policy-details summary {
+  font-weight: bold;
+  cursor: pointer;
+  color: #b08aff;
+}
+
+.policy-text {
+  white-space: pre-wrap;
+  background: #1e1b2e;
+  border-left: 4px solid #b08aff;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
 
 /* ====== Адаптация ====== */
 @media (max-width: 480px) {
-  .agreement-block label {
-    font-size: 0.9rem;
-    line-height: 1.4;
-    gap: 8px;
-    flex-wrap: wrap;
+  .booking-container {
+    padding: 20px;
+    margin: 20px auto;
+    width: 95%;
+    box-sizing: border-box;
   }
 
-  .booking-form label {
-    font-size: 1rem;
+  .language-selector button {
+    padding: 5px 10px;
+    font-size: 0.9rem;
   }
 
   .booking-form input,
   .booking-form select {
     padding: 10px;
+    font-size: 16px !important;
+    box-sizing: border-box;
+  }
+
+  .booking-form label {
     font-size: 1rem;
   }
 
@@ -176,16 +206,16 @@ body, html {
     font-size: 0.9rem;
   }
 
-  .inline-policy {
-    padding-left: 5px;
-    padding-right: 5px;
+  .agreement-block label {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    gap: 10px;
+    flex-wrap: wrap;
+    word-break: break-word;
   }
 
-  input,
-  select,
-  textarea {
-    font-size: 16px !important;
-    box-sizing: border-box;
+  .submit-button {
+    padding: 10px;
+    font-size: 0.95rem;
   }
 }
-
