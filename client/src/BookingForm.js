@@ -3,17 +3,10 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './BookingForm.css';
 import translations from './translations';
-import { getAvailableDates } from './services/bookingService';
+import { getAvailableDates } from './services/bookingService'; // только getAvailableDates, createBooking убираем
 import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe('pk_test_51RJGQqGxtq8EnrYWvJDGwcixbAOseYMlOeRoPXRNZlBDMlmqOZwZQeZvoviA6rhkshmUcVuCTvW9tAjkZZVs5aTF00fn7m4ulh');
-
-const formatLocalDate = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
 
 function BookingForm() {
   const [formData, setFormData] = useState({
@@ -25,10 +18,8 @@ function BookingForm() {
     agreePolicy: false,
     agreePrepayment: false,
   });
-
   const [availableDates, setAvailableDates] = useState([]);
   const [language, setLanguage] = useState('de');
-  const [showPolicy, setShowPolicy] = useState(false);
   const t = translations[language];
   const selectedDate = availableDates.find((d) => d.id === formData.dateId);
 
@@ -49,57 +40,43 @@ function BookingForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.agreePolicy || !formData.agreePrepayment) {
       alert(t.agreementError);
       return;
     }
-
     if (!formData.dateId) {
       alert(t.fillError);
       return;
     }
 
     try {
+      // Сохраняем данные формы временно в localStorage
       localStorage.setItem('bookingFormData', JSON.stringify(formData));
 
-      const response = await fetch('https://videographer-booking-server.onrender.com/create-checkout-session', {
+      // Создаём Stripe Checkout сессию
+      const response = await fetch('http://localhost:4242/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
-        mode: 'cors',
       });
 
       const data = await response.json();
 
       const stripe = await stripePromise;
-      if (!stripe) {
-        alert('Stripe не загрузился');
-        return;
-      }
-
-      if (!data.sessionId) {
-        alert('Ошибка: sessionId не получен от сервера');
-        return;
-      }
-
-      const result = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-
-      if (result?.error) {
-        alert('Ошибка: ' + result.error.message);
-      }
+      await stripe.redirectToCheckout({ sessionId: data.sessionId });
     } catch (error) {
+      console.error('Ошибка при создании Stripe-сессии:', error);
       alert('Ошибка при создании оплаты. Попробуйте позже.');
     }
   };
 
   const tileClassName = ({ date }) => {
-    const formatted = formatLocalDate(date);
+    const formatted = date.toISOString().split('T')[0];
     return availableDates.some((d) => d.date === formatted) ? 'available-date' : null;
   };
 
   const handleDateSelect = (selectedDate) => {
-    const formatted = formatLocalDate(selectedDate);
+    const formatted = selectedDate.toISOString().split('T')[0];
     const selected = availableDates.find((d) => d.date === formatted);
     setFormData({
       ...formData,
@@ -110,7 +87,6 @@ function BookingForm() {
   return (
     <div className="booking-container">
       <h2 className="booking-title">{t.title}</h2>
-
       <div className="language-selector">
         {Object.keys(translations).map((lang) => (
           <button
@@ -122,7 +98,6 @@ function BookingForm() {
           </button>
         ))}
       </div>
-
       <form onSubmit={handleSubmit} className="booking-form">
         <div className="form-group">
           <label>{t.name}:</label>
@@ -132,7 +107,6 @@ function BookingForm() {
             required
           />
         </div>
-
         <div className="form-group">
           <label>{t.phone}:</label>
           <input
@@ -141,16 +115,14 @@ function BookingForm() {
             required
           />
         </div>
-
         <div className="form-group">
-          <label>Email:</label>
+          <label>E-Mail:</label>
           <input
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
           />
         </div>
-
         <div className="form-group">
           <label>{t.type}:</label>
           <select
@@ -160,11 +132,12 @@ function BookingForm() {
           >
             <option value="">--</option>
             {t.types.map((type, idx) => (
-              <option key={idx} value={type}>{type}</option>
+              <option key={idx} value={type}>
+                {type}
+              </option>
             ))}
           </select>
         </div>
-
         <div className="form-group">
           <label>{t.date}:</label>
           <Calendar
@@ -182,33 +155,51 @@ function BookingForm() {
           </div>
         )}
 
-        <div className="agreement-block">
-        <details>
-  <summary>
-    <label>
-      <input
-        type="checkbox"
-        checked={formData.agreePolicy}
-        onChange={(e) => setFormData({ ...formData, agreePolicy: e.target.checked })}
-      />
-      <span>{t.agreeData}</span>
-    </label>
-  </summary>
-  <div className="policy-text">
-    <pre>{t.policy}</pre>
-  </div>
-</details>
+<div className="agreement-block">
+<label className="inline-policy">
+  <input
+    type="checkbox"
+    checked={formData.agreePolicy}
+    onChange={(e) =>
+      setFormData({ ...formData, agreePolicy: e.target.checked })
+    }
+  />
+  <span>
+    {(() => {
+      // Ключевая фраза, которая пойдёт в <summary>
+      const keyword =
+        language === 'de' ? 'der Datenverarbeitung zu' :
+        language === 'en' ? 'the data processing policy' :
+        language === 'ua' ? 'політикою обробки даних' :
+        'политикой обработки данных';
 
+      const parts = t.agreeData.split(keyword);
+      return (
+        <>
+          {parts[0]}
+          <details className="inline-details">
+            <summary className="inline-summary">{keyword}</summary>
+            <div className="inline-policy-text">{t.policy}</div>
+          </details>
+          {parts[1] || ''}
+        </>
+      );
+    })()}
+  </span>
+</label>
 
-          <label>
-            <input
-              type="checkbox"
-              checked={formData.agreePrepayment}
-              onChange={(e) => setFormData({ ...formData, agreePrepayment: e.target.checked })}
-            />
-            <span>{t.agreePayment}</span>
-          </label>
-        </div>
+<label>
+    <input
+      type="checkbox"
+      checked={formData.agreePrepayment}
+      onChange={(e) =>
+        setFormData({ ...formData, agreePrepayment: e.target.checked })
+      }
+    />
+    <span>{t.agreePayment}</span>
+  </label>
+</div>
+
 
         <button type="submit" className="submit-button">
           {t.book}
