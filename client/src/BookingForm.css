@@ -97,6 +97,37 @@ body {
   color: #666 !important;
 }
 
+/* Стили навигации */
+.react-calendar__navigation__label {
+  pointer-events: none;
+  cursor: default;
+  background: transparent !important;
+  color: #b08aff !important;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  box-shadow: none;
+}
+
+.react-calendar__navigation__prev2-button,
+.react-calendar__navigation__next2-button {
+  display: none !important;
+}
+
+.react-calendar__navigation__prev-button,
+.react-calendar__navigation__next-button {
+  background: none;
+  border: none;
+  color: #b08aff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.react-calendar__navigation__prev-button:hover,
+.react-calendar__navigation__next-button:hover {
+  color: #fff;
+}
+
 /* ====== Время ====== */
 .selected-time {
   text-align: center;
@@ -218,44 +249,4 @@ body {
     padding: 10px;
     font-size: 0.95rem;
   }
-}
-
-/* Календарная навигация */
-.react-calendar__navigation__label {
-  pointer-events: none;
-  cursor: default;
-  background: transparent !important;
-  color: #b08aff !important;
-  font-weight: bold;
-  font-size: 1rem;
-  border: none;
-  box-shadow: none;
-}
-.react-calendar__navigation__prev2-button,
-.react-calendar__navigation__next2-button {
-  display: none !important;
-}
-.react-calendar__navigation__prev-button,
-.react-calendar__navigation__next-button {
-  background-color: transparent;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 16px 16px;
-  border: none;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  padding: 0;
-  transition: background-color 0.3s ease;
-  border-radius: 50%;
-}
-.react-calendar__navigation__prev-button {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23b08aff' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z'/></svg>");
-}
-.react-calendar__navigation__next-button {
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23b08aff' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z'/></svg>");
-}
-.react-calendar__navigation__prev-button:hover,
-.react-calendar__navigation__next-button:hover {
-  background-color: rgba(176, 138, 255, 0.2);
 }
