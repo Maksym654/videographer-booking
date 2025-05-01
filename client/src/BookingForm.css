@@ -250,3 +250,30 @@ body {
     font-size: 0.95rem;
   }
 }
+.react-calendar__navigation__prev-button,
+.react-calendar__navigation__next-button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: auto !important;
+  height: auto !important;
+  font-size: 1.5rem;
+  color: #b08aff !important;
+  padding: 0 10px !important;
+  line-height: 1 !important;
+  cursor: pointer;
+}
+
+.react-calendar__navigation__prev-button::before {
+  content: '‹';
+}
+
+.react-calendar__navigation__next-button::before {
+  content: '›';
+}
+
+/* Прячем старую иконку */
+.react-calendar__navigation__prev-button svg,
+.react-calendar__navigation__next-button svg {
+  display: none !important;
+}
