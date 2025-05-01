@@ -220,3 +220,14 @@
     font-size: 0.95rem;
   }
 }
+@media (max-width: 600px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* это отключает zoom на iOS Safari */
+  }
+
+  body {
+    overscroll-behavior: contain;
+  }
+}
