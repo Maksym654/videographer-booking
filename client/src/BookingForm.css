@@ -1,12 +1,4 @@
-html {
-  touch-action: manipulation;
-}
-
-input,
-select,
-textarea {
-  font-size: 16px; /* предотвращает zoom на фокусе iOS */
-}
+/* Общие стили */
 
 .booking-container {
   max-width: 500px;
@@ -17,7 +9,6 @@ textarea {
   border-radius: 20px;
   box-shadow: 0 0 20px #b084f7;
   color: white;
-  box-sizing: border-box;
 }
 
 .booking-title {
@@ -59,19 +50,18 @@ textarea {
   margin-bottom: 5px;
 }
 
-input,
-select {
+input, select {
   width: 100%;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #ccc;
   background-color: #2e294e;
   color: white;
-  box-sizing: border-box;
+  font-size: 16px;
+  font-family: inherit;
 }
 
-input:focus,
-select:focus {
+input:focus, select:focus {
   outline: none;
   border-color: #b084f7;
 }
@@ -91,13 +81,12 @@ select:focus {
 }
 
 .react-calendar__navigation button {
-  background-color: #2e294e;
-  color: white;
+  background-color: #f0f0f0;
+  color: #2e2e2e;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 5px 10px;
   font-size: 16px;
-  cursor: pointer;
 }
 
 .react-calendar__navigation button:disabled {
@@ -112,19 +101,13 @@ select:focus {
   font-size: 0.75rem;
 }
 
-.react-calendar__month-view__days {
-  display: grid !important;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-}
-
 .react-calendar__tile {
   padding: 0.5em 0;
-  border-radius: 999px;
+  margin: 3px;
+  border-radius: 50%;
   background-color: #333;
   color: #fff;
-  transition: 0.3s;
-  text-align: center;
+  font-size: 14px;
 }
 
 .react-calendar__tile--now {
@@ -145,7 +128,7 @@ select:focus {
 .available-date {
   background-color: #27ae60 !important;
   color: white !important;
-  border-radius: 999px !important;
+  border-radius: 50% !important;
 }
 
 .selected-time {
@@ -164,13 +147,10 @@ select:focus {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-sizing: border-box;
-  word-wrap: break-word;
 }
 
 .agreement-block label {
-  display: grid;
-  grid-template-columns: auto 1fr;
+  display: flex;
   align-items: flex-start;
   gap: 10px;
   color: #fff;
@@ -180,23 +160,36 @@ select:focus {
 }
 
 .agreement-block input[type="checkbox"] {
-  margin-top: 4px;
+  margin-top: 3px;
   min-width: 18px;
   min-height: 18px;
   transform: scale(1.2);
 }
 
-.agreement-block summary {
+.agreement-block details summary {
   color: #b084f7;
   cursor: pointer;
-  margin-top: 10px;
+  font-weight: bold;
+  display: inline-block;
 }
 
-.agreement-block details {
-  color: #ccc;
-  font-size: 13px;
+.agreement-block summary::after {
+  content: " [+]";
+}
+
+.agreement-block details[open] summary::after {
+  content: " [-]";
+}
+
+.policy-text {
+  background-color: #1e1b2e;
+  border: 1px solid #b084f7;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10px;
   white-space: pre-wrap;
-  padding-left: 4px;
+  font-size: 13px;
+  color: #ccc;
 }
 
 .submit-button {
@@ -232,8 +225,9 @@ select:focus {
 
 /* Мобильная адаптация */
 @media (max-width: 767px) {
-  body {
-    background-color: #1e1b2e;
+  html, body {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
   }
 
   .booking-container {
@@ -252,6 +246,10 @@ select:focus {
 
   .agreement-block label {
     font-size: 14px;
+  }
+
+  .agreement-block details summary::after {
+    content: none;
   }
 
   .submit-button {
