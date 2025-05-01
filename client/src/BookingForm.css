@@ -118,51 +118,47 @@ body, html {
 .agreement-block {
   border: 2px solid #b08aff;
   padding: 20px;
-  margin-top: 25px;
   border-radius: 12px;
   background-color: #2a234a;
+  margin-top: 25px;
+  box-shadow: 0 4px 12px rgba(176, 138, 255, 0.2);
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
+
 .agreement-block label {
-  display: flex;
+  display: flex;                /* заменили grid на flex */
   align-items: flex-start;
+  flex-wrap: nowrap;           /* запрещаем перенос */
   gap: 10px;
   font-size: 1rem;
   color: #f0f0f0;
-  line-height: 1.4;
+  line-height: 1.5;
+  text-align: left;
 }
+
 .agreement-block input[type="checkbox"] {
   margin-top: 4px;
+  flex-shrink: 0;
   transform: scale(1.2);
   cursor: pointer;
-  flex-shrink: 0;
 }
-.inline-summary {
-  color: #b084f7;
+
+.agreement-block a {
+  color: #b08aff;
   text-decoration: underline;
-  cursor: pointer;
   font-weight: 500;
 }
-.inline-policy-text {
-  background-color: #1e1b2e;
-  padding: 1rem;
-  margin-top: 0.5rem;
-  color: #f0f0f0;
-  white-space: pre-wrap;
-  border-left: 4px solid #b084f7;
-  border-radius: 10px;
-  font-size: 0.9rem;
-}
+
 
 /* ====== Адаптация ====== */
 @media (max-width: 480px) {
-  .booking-container {
-    padding: 20px;
-    margin: 20px auto;
-    width: 95%;
-    box-sizing: border-box;
+  .agreement-block label {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   .booking-form label {
@@ -180,11 +176,6 @@ body, html {
     font-size: 0.9rem;
   }
 
-  .agreement-block label {
-    font-size: 0.95rem;
-    gap: 10px;
-  }
-
   .inline-policy {
     padding-left: 5px;
     padding-right: 5px;
@@ -197,3 +188,4 @@ body, html {
     box-sizing: border-box;
   }
 }
+
