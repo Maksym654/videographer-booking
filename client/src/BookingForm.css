@@ -251,14 +251,42 @@ body {
 }
 
 @media (max-width: 480px) {
-body {
-  background-color: #1a152d; /* Более тёмный и насыщенный фон */
+html, body {
+  background-color: #1e1b2e;
   color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 .booking-container {
   background-color: #2a234a;
+  border: 2px solid #b084f7;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px auto;
+  box-sizing: border-box;
+  width: 95%;
+}
+
+.booking-form label {
   color: #f0f0f0;
+  font-size: 1rem;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.booking-form input,
+.booking-form select {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+  background-color: #1e1b2e;
+  color: #f0f0f0;
+  border: 1px solid #b084f7;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1rem;
 }
 
 .react-calendar {
@@ -266,12 +294,13 @@ body {
 }
 
 .react-calendar__tile {
-  color: #f0f0f0;
+  color: #fff;
+  margin: 4px !important;
 }
 
 .react-calendar__tile--now {
   background-color: #b084f7 !important;
-  color: #fff !important;
+  color: white !important;
 }
 
 .react-calendar__tile--active {
@@ -285,64 +314,23 @@ body {
 }
 
 .inline-policy-text {
-  color: #f2f2f2;
-  background-color: #2a234a;
+  background-color: #1e1b2e;
   border-left: 4px solid #b084f7;
   padding: 1rem;
-  font-size: 0.9rem;
   margin-top: 0.5rem;
+  color: #f0f0f0;
+  white-space: pre-wrap;
+  border-radius: 10px;
 }
 
 .inline-summary {
   color: #b084f7;
   font-weight: 500;
   text-decoration: underline;
-}
-}
-
-/* 1. Фикс масштаба и фона */
-@viewport {
-width: device-width;
-initial-scale: 1.0;
-maximum-scale: 1.0;
-}
-@media (max-width: 480px) {
-html, body {
-  background-color: #1a152d;
-  overflow-x: hidden;
+  cursor: pointer;
 }
 
-.booking-container {
-  background-color: #2a234a;
-  margin: 20px auto;
-  padding: 20px;
-  border: 2px solid #b084f7;
-  box-sizing: border-box;
-}
-
-/* 2. Читаемые названия полей */
-.booking-form label {
-  color: #f0f0f0;
-  font-size: 0.9rem;
-}
-
-/* 3. Не даем инпутам выходить за рамки */
-.booking-form input,
-.booking-form select {
-  width: 100%;
-  box-sizing: border-box;
-  max-width: 100%;
-  background-color: #1a152d;
-  color: #f0f0f0;
-  border: 1px solid #b084f7;
-}
-
-/* 4. Убираем масштабирование при фокусе */
 input, select, textarea {
   font-size: 16px !important;
-}
-
-.submit-button {
-  font-size: 1rem;
 }
 }
