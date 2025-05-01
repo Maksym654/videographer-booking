@@ -1,3 +1,13 @@
+html {
+  touch-action: manipulation;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px; /* предотвращает zoom на фокусе iOS */
+}
+
 .booking-container {
   max-width: 500px;
   margin: 30px auto;
@@ -49,7 +59,8 @@
   margin-bottom: 5px;
 }
 
-input, select {
+input,
+select {
   width: 100%;
   padding: 10px;
   border-radius: 10px;
@@ -59,7 +70,8 @@ input, select {
   box-sizing: border-box;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   outline: none;
   border-color: #b084f7;
 }
@@ -100,12 +112,19 @@ input:focus, select:focus {
   font-size: 0.75rem;
 }
 
+.react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
 .react-calendar__tile {
   padding: 0.5em 0;
   border-radius: 999px;
   background-color: #333;
   color: #fff;
   transition: 0.3s;
+  text-align: center;
 }
 
 .react-calendar__tile--now {
@@ -165,6 +184,19 @@ input:focus, select:focus {
   min-width: 18px;
   min-height: 18px;
   transform: scale(1.2);
+}
+
+.agreement-block summary {
+  color: #b084f7;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.agreement-block details {
+  color: #ccc;
+  font-size: 13px;
+  white-space: pre-wrap;
+  padding-left: 4px;
 }
 
 .submit-button {
