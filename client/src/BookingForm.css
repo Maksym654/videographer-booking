@@ -284,3 +284,8 @@ body {
   color: #fff !important;
   cursor: pointer;
 }
+.react-calendar__tile.available-date:not(.react-calendar__tile--active):hover {
+  background-color: #2ecc71 !important; /* светло-зелёный при наведении */
+  color: #fff !important;
+  cursor: pointer;
+}
