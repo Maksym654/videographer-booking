@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
   collection,
-  getDocs,
+  onSnapshot,
   doc,
   updateDoc,
   deleteDoc,
   addDoc,
-  onSnapshot,
-  where,
   query,
+  where,
+  getDocs,
   getDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -16,10 +16,15 @@ import './ClientsManager.css';
 
 const formatDate = (input) => {
   try {
-    const date = input?.seconds
-      ? new Date(input.seconds * 1000)
-      : new Date(input);
-    return date.toLocaleDateString('ru-RU');
+    const date = input?.seconds ? new Date(input.seconds * 1000) : new Date(input);
+    return date.toLocaleDateString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }) + ' ' + date.toLocaleTimeString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   } catch {
     return input;
   }
@@ -30,8 +35,8 @@ function ClientsManager() {
   const [editClientId, setEditClientId] = useState(null);
   const [editedData, setEditedData] = useState({});
   const [sortBy, setSortBy] = useState('status');
-  const [newClient, setNewClient] = useState({ name: '', phone: '', email: '' });
   const [newBooking, setNewBooking] = useState({ product: '', payment: '' });
+  const [paymentEdited, setPaymentEdited] = useState({});
 
   useEffect(() => {
     const clientsRef = collection(db, 'clients');
@@ -52,29 +57,11 @@ function ClientsManager() {
         })
       );
 
-      const mergedClients = mergeClients(updatedClients);
-      setClients(mergedClients);
+      setClients(updatedClients);
     });
 
     return () => unsubscribe();
   }, []);
-
-  const mergeClients = (clientsArray) => {
-    const merged = [];
-    clientsArray.forEach(client => {
-      const existing = merged.find(c =>
-        (c.phone && client.phone && c.phone === client.phone) ||
-        (c.email && client.email && c.email === client.email)
-      );
-      if (existing) {
-        existing.bookings = [...(existing.bookings || []), ...(client.bookings || [])];
-        existing.totalSum += client.totalSum || 0;
-      } else {
-        merged.push({ ...client });
-      }
-    });
-    return merged;
-  };
 
   const countPendingBookings = (client) => {
     return (client.bookings || []).filter(b => b.status !== 'done').length;
@@ -118,6 +105,20 @@ function ClientsManager() {
       }
       return client;
     }));
+    setPaymentEdited(prev => ({
+      ...prev,
+      [`${clientId}_${bookingIdx}`]: true
+    }));
+  };
+
+  const saveBookingPayment = async (clientId) => {
+    const client = clients.find(c => c.id === clientId);
+    const totalSum = (client.bookings || []).reduce((sum, b) => sum + (b.payment || 0), 0);
+    await updateDoc(doc(db, 'clients', clientId), {
+      bookings: client.bookings,
+      totalSum
+    });
+    setPaymentEdited({});
   };
 
   const handleAddBooking = async (clientId) => {
@@ -126,7 +127,7 @@ function ClientsManager() {
     const clientDoc = await getDoc(doc(db, 'clients', clientId));
     const clientData = clientDoc.data();
 
-    const updatedBookings = [...clientData.bookings, {
+    const updatedBookings = [...(clientData.bookings || []), {
       date: new Date().toISOString(),
       startTime: '',
       endTime: '',
@@ -150,32 +151,6 @@ function ClientsManager() {
     setNewBooking({ product: '', payment: '' });
   };
 
-  const handleAddNewClient = async () => {
-    if (!newClient.name || (!newClient.phone && !newClient.email)) {
-      return alert('Заполните имя и хотя бы телефон или email');
-    }
-
-    const phoneQuery = query(collection(db, 'clients'), where('phone', '==', newClient.phone));
-    const emailQuery = query(collection(db, 'clients'), where('email', '==', newClient.email));
-    const phoneMatch = await getDocs(phoneQuery);
-    const emailMatch = await getDocs(emailQuery);
-
-    if (!phoneMatch.empty || !emailMatch.empty) {
-      alert('Клиент с таким телефоном или email уже существует!');
-      return;
-    }
-
-    await addDoc(collection(db, 'clients'), {
-      ...newClient,
-      bookings: [],
-      totalSum: 0,
-      totalOrders: 0,
-      status: 'pending'
-    });
-
-    setNewClient({ name: '', phone: '', email: '' });
-  };
-
   const sortedClients = [...clients].sort((a, b) => {
     const aPending = countPendingBookings(a);
     const bPending = countPendingBookings(b);
@@ -197,14 +172,6 @@ function ClientsManager() {
           <option value="email">Email</option>
           <option value="phone">Телефон</option>
         </select>
-      </div>
-
-      <div className="new-client-form">
-        <h3>Добавить нового клиента</h3>
-        <input placeholder="Имя" value={newClient.name} onChange={(e) => setNewClient({ ...newClient, name: e.target.value })} />
-        <input placeholder="Телефон" value={newClient.phone} onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })} />
-        <input placeholder="Email" value={newClient.email} onChange={(e) => setNewClient({ ...newClient, email: e.target.value })} />
-        <button onClick={handleAddNewClient}>Добавить клиента</button>
       </div>
 
       {sortedClients.map(client => {
@@ -235,17 +202,21 @@ function ClientsManager() {
                       <strong> Сумма:</strong> {booking.payment || 0}€
 
                       {booking.paymentDate && (
-                        <div style={{ fontSize: '12px', color: '#4caf50', marginTop: '4px' }}>
+                        <div className="stripe-note">
                           ✅ Бронь оплачена через Stripe {new Date(booking.paymentDate).toLocaleString('ru-RU')}, сумма: 50€
                         </div>
                       )}
 
                       <input
                         type="number"
-                        value={booking.payment || ''}
+                        value={booking.payment ?? ''}
+                        placeholder="Сумма"
+                        min={0}
                         onChange={(e) => handleBookingPaymentChange(client.id, idx, e.target.value)}
-                        placeholder="Оплата"
                       />
+                      {paymentEdited[`${client.id}_${idx}`] && (
+                        <button className="save-btn" onClick={() => saveBookingPayment(client.id)}>💾</button>
+                      )}
                       <button
                         className={`status-button ${booking.status === 'done' ? 'status-done' : 'status-pending'}`}
                         onClick={() => handleToggleBookingStatus(client.id, idx)}
@@ -257,15 +228,21 @@ function ClientsManager() {
 
                   <div className="add-booking-form">
                     <h5>Добавить новую бронь:</h5>
-                    <input
-                      placeholder="Тип съёмки"
+                    <select
                       value={newBooking.product}
                       onChange={(e) => setNewBooking({ ...newBooking, product: e.target.value })}
-                    />
+                    >
+                      <option value="">Выберите тип съёмки</option>
+                      <option value="UGC">UGC</option>
+                      <option value="Контент">Контент</option>
+                      <option value="Каталог">Каталог</option>
+                      <option value="Реклама">Реклама</option>
+                    </select>
                     <input
                       type="number"
                       placeholder="Сумма оплаты"
                       value={newBooking.payment}
+                      min={0}
                       onChange={(e) => setNewBooking({ ...newBooking, payment: e.target.value })}
                     />
                     <button onClick={() => handleAddBooking(client.id)}>Добавить бронь</button>
