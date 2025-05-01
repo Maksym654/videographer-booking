@@ -149,9 +149,6 @@ function ClientsManager() {
     });
 
     setNewBooking({ product: '', payment: '' });
-    const freshSnap = await getDoc(doc(db, 'clients', id));
-    const updatedClient = { id, ...freshSnap.data() };
-    setClients(prev => prev.map(c => c.id === id ? updatedClient : c));
   };
 
   const sortedClients = [...clients].sort((a, b) => {
@@ -181,7 +178,8 @@ function ClientsManager() {
         const pendingCount = countPendingBookings(client);
         return (
           <div key={client.id} className="client-card">
-            <div onClick={() => handleEditClick(client.id, client)} className="client-summary">
+            <div className="client-summary" onClick={() => handleEditClick(client.id, client)}>
+              <div className='edit-icon'>✏️</div>
               <strong>Имя:</strong> {client.name} | <strong>Телефон:</strong> {client.phone} | <strong>Email:</strong> {client.email || '-'}
               <br />
               <strong>Общая сумма:</strong> {client.totalSum}€
@@ -189,15 +187,7 @@ function ClientsManager() {
               <span style={{ color: '#999', marginLeft: '10px' }}>Всего заказов: {client.totalOrders || 0}</span>
             </div>
 
-            {editClientId === client.id && (
-              <div className="edit-section">
-                <input value={editedData.name} onChange={(e) => handleChange('name', e.target.value)} placeholder="Имя" />
-                <input value={editedData.phone} onChange={(e) => handleChange('phone', e.target.value)} placeholder="Телефон" />
-                <input value={editedData.email} onChange={(e) => handleChange('email', e.target.value)} placeholder="Email" />
-                <button onClick={handleSaveChanges}>Сохранить изменения</button>
-                <button className="delete-btn" onClick={() => handleDeleteClient(client.id)}>Удалить клиента</button>
-
-                <div className="bookings-list">
+            <div className='bookings-list' style={{ display: editClientId === client.id ? 'block' : 'none' }}>
                   <h4>Брони:</h4>
                   {client.bookings?.map((booking, idx) => (
                     <div key={idx} className="booking-entry">
@@ -205,7 +195,7 @@ function ClientsManager() {
                       <strong> Сумма:</strong> {booking.payment || 0}€
 
                       {booking.paymentDate && (
-                        <div className="stripe-note">
+                        <div className="stripe-note styled">
                           ✅ Бронь оплачена через Stripe {new Date(booking.paymentDate).toLocaleString('ru-RU')}, сумма: 50€
                         </div>
                       )}
@@ -248,16 +238,15 @@ function ClientsManager() {
                       min={0}
                       onChange={(e) => setNewBooking({ ...newBooking, payment: e.target.value })}
                     />
-                    <button onClick={() => handleAddBooking(client.id)}>Добавить бронь</button>
+                      <button onClick={() => handleAddBooking(client.id)}>Добавить бронь</button>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+            );
+          })}
+        </div>
+      );
+    }
 
-export default ClientsManager;
+    export default ClientsManager;
+
