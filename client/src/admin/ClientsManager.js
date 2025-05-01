@@ -5,10 +5,6 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  addDoc,
-  query,
-  where,
-  getDocs,
   getDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -34,6 +30,7 @@ function ClientsManager() {
   const [clients, setClients] = useState([]);
   const [editClientId, setEditClientId] = useState(null);
   const [editedData, setEditedData] = useState({});
+  const [openClientId, setOpenClientId] = useState(null);
   const [sortBy, setSortBy] = useState('status');
   const [newBooking, setNewBooking] = useState({ product: '', payment: '' });
   const [paymentEdited, setPaymentEdited] = useState({});
@@ -67,8 +64,12 @@ function ClientsManager() {
     return (client.bookings || []).filter(b => b.status !== 'done').length;
   };
 
-  const handleEditClick = (id, client) => {
-    setEditClientId(editClientId === id ? null : id);
+  const handleToggleOpen = (id) => {
+    setOpenClientId(openClientId === id ? null : id);
+  };
+
+  const handleEditClick = (client) => {
+    setEditClientId(client.id);
     setEditedData({ ...client });
   };
 
@@ -175,78 +176,107 @@ function ClientsManager() {
       </div>
 
       {sortedClients.map(client => {
+        const isEditing = editClientId === client.id;
+        const isOpen = openClientId === client.id;
         const pendingCount = countPendingBookings(client);
+
         return (
           <div key={client.id} className="client-card">
-             <div className="client-summary">
-  <button className="edit-btn" onClick={() => handleEditClick(client.id, client)}>✏️</button>
-  <strong>Имя:</strong> {client.name} | <strong>Телефон:</strong> {client.phone} | <strong>Email:</strong> {client.email || '-'}
-  <br />
-  <strong>Общая сумма:</strong> {client.totalSum}€
-  {pendingCount > 0 && <span className="pending-count">Ожидает заказов: {pendingCount}</span>}
-  <span className="total-orders">Всего заказов: {client.totalOrders || 0}</span>
-</div>
+            <div className="client-summary" onClick={() => handleToggleOpen(client.id)}>
+              <button
+                className="edit-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditClick(client);
+                }}
+              >
+                ✏️
+              </button>
+              {isEditing ? (
+                <>
+                  <input value={editedData.name} onChange={(e) => handleChange('name', e.target.value)} />
+                  <input value={editedData.phone} onChange={(e) => handleChange('phone', e.target.value)} />
+                  <input value={editedData.email} onChange={(e) => handleChange('email', e.target.value)} />
+                  <div className="edit-icons">
+                    <button onClick={handleSaveChanges}>💾</button>
+                    <button onClick={() => handleDeleteClient(client.id)}>🗑️</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <strong>Имя:</strong> {client.name} <br />
+                  <strong>Телефон:</strong> {client.phone} <br />
+                  <strong>Email:</strong> {client.email || '-'} <br />
+                  <strong>Общая сумма:</strong> {client.totalSum}€ <br />
+                  {pendingCount > 0 && (
+                    <span className="pending-count">Ожидает заказов: {pendingCount}</span>
+                  )}
+                  <div className="total-orders">Всего заказов: {client.totalOrders || 0}</div>
+                </>
+              )}
+            </div>
 
-            <div className='bookings-list' style={{ display: editClientId === client.id ? 'block' : 'none' }}>
-                  <h4>Брони:</h4>
-                  {client.bookings?.map((booking, idx) => (
-                    <div key={idx} className="booking-entry">
-                      {formatDate(booking.date)} {booking.startTime} - {booking.endTime} | {booking.product} |
-                      <strong> Сумма:</strong> {booking.payment || 0}€
+            {isOpen && (
+              <div className="bookings-list">
+                <h4>Брони:</h4>
+                {client.bookings?.map((booking, idx) => (
+                  <div key={idx} className="booking-entry">
+                    {formatDate(booking.date)} {booking.startTime} - {booking.endTime} | {booking.product} |
+                    <strong> Сумма:</strong> {booking.payment || 0}€
 
-                      {booking.paymentDate && (
-                        <div className="stripe-note styled">
-                          ✅ Бронь оплачена через Stripe {new Date(booking.paymentDate).toLocaleString('ru-RU')}, сумма: 50€
-                        </div>
-                      )}
+                    {booking.paymentDate && (
+                      <div className="stripe-note">
+                        ✅ Бронь оплачена через Stripe {new Date(booking.paymentDate).toLocaleString('ru-RU')}, сумма: 50€
+                      </div>
+                    )}
 
-                      <input
-                        type="number"
-                        value={booking.payment ?? ''}
-                        placeholder="Сумма"
-                        min={0}
-                        onChange={(e) => handleBookingPaymentChange(client.id, idx, e.target.value)}
-                      />
-                      {paymentEdited[`${client.id}_${idx}`] && (
-                        <button className="save-btn" onClick={() => saveBookingPayment(client.id)}>💾</button>
-                      )}
-                      <button
-                        className={`status-button ${booking.status === 'done' ? 'status-done' : 'status-pending'}`}
-                        onClick={() => handleToggleBookingStatus(client.id, idx)}
-                      >
-                        {booking.status === 'done' ? 'Обработан' : 'Ожидается'}
-                      </button>
-                    </div>
-                  ))}
-
-                  <div className="add-booking-form">
-                    <h5>Добавить новую бронь:</h5>
-                    <select
-                      value={newBooking.product}
-                      onChange={(e) => setNewBooking({ ...newBooking, product: e.target.value })}
-                    >
-                      <option value="">Выберите тип съёмки</option>
-                      <option value="UGC">UGC</option>
-                      <option value="Контент">Контент</option>
-                      <option value="Каталог">Каталог</option>
-                      <option value="Реклама">Реклама</option>
-                    </select>
                     <input
                       type="number"
-                      placeholder="Сумма оплаты"
-                      value={newBooking.payment}
+                      value={booking.payment ?? ''}
+                      placeholder="Сумма"
                       min={0}
-                      onChange={(e) => setNewBooking({ ...newBooking, payment: e.target.value })}
+                      onChange={(e) => handleBookingPaymentChange(client.id, idx, e.target.value)}
                     />
-                      <button onClick={() => handleAddBooking(client.id)}>Добавить бронь</button>
+                    {paymentEdited[`${client.id}_${idx}`] && (
+                      <button className="save-btn" onClick={() => saveBookingPayment(client.id)}>💾</button>
+                    )}
+                    <button
+                      className={`status-button ${booking.status === 'done' ? 'status-done' : 'status-pending'}`}
+                      onClick={() => handleToggleBookingStatus(client.id, idx)}
+                    >
+                      {booking.status === 'done' ? 'Обработан' : 'Ожидается'}
+                    </button>
                   </div>
+                ))}
+
+                <div className="add-booking-form">
+                  <h5>Добавить новую бронь:</h5>
+                  <select
+                    value={newBooking.product}
+                    onChange={(e) => setNewBooking({ ...newBooking, product: e.target.value })}
+                  >
+                    <option value="">Выберите тип съёмки</option>
+                    <option value="UGC">UGC</option>
+                    <option value="Контент">Контент</option>
+                    <option value="Каталог">Каталог</option>
+                    <option value="Реклама">Реклама</option>
+                  </select>
+                  <input
+                    type="number"
+                    placeholder="Сумма оплаты"
+                    value={newBooking.payment}
+                    min={0}
+                    onChange={(e) => setNewBooking({ ...newBooking, payment: e.target.value })}
+                  />
+                  <button onClick={() => handleAddBooking(client.id)}>Добавить бронь</button>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      );
-    }
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
-    export default ClientsManager;
-
+export default ClientsManager;
