@@ -1,4 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import {
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+  addDoc,
+  onSnapshot,
+  where,
+  query,
+  getDoc
+} from 'firebase/firestore';
 import { db } from '../firebase';
 import './ClientsManager.css';
 
@@ -22,22 +34,26 @@ function ClientsManager() {
   const [newBooking, setNewBooking] = useState({ product: '', payment: '' });
 
   useEffect(() => {
-    const unsubscribe = db.collection('clients').onSnapshot(snapshot => {
-      const rawClients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const clientsRef = collection(db, 'clients');
+    const unsubscribe = onSnapshot(clientsRef, async (snapshot) => {
+      const rawClients = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
-      const updatePromises = rawClients.map(async client => {
-        if (client.totalOrders === undefined) {
-          const totalOrders = (client.bookings || []).length;
-          await db.collection('clients').doc(client.id).update({ totalOrders });
-          client.totalOrders = totalOrders;
-        }
-        return client;
-      });
+      const updatedClients = await Promise.all(
+        rawClients.map(async client => {
+          if (client.totalOrders === undefined) {
+            const totalOrders = (client.bookings || []).length;
+            await updateDoc(doc(db, 'clients', client.id), { totalOrders });
+            client.totalOrders = totalOrders;
+          }
+          return client;
+        })
+      );
 
-      Promise.all(updatePromises).then(updatedClients => {
-        const mergedClients = mergeClients(updatedClients);
-        setClients(mergedClients);
-      });
+      const mergedClients = mergeClients(updatedClients);
+      setClients(mergedClients);
     });
 
     return () => unsubscribe();
@@ -75,13 +91,13 @@ function ClientsManager() {
 
   const handleSaveChanges = async () => {
     const totalSum = (editedData.bookings || []).reduce((sum, booking) => sum + (booking.payment || 0), 0);
-    await db.collection('clients').doc(editClientId).update({ ...editedData, totalSum });
+    await updateDoc(doc(db, 'clients', editClientId), { ...editedData, totalSum });
     setEditClientId(null);
   };
 
   const handleDeleteClient = async (id) => {
     if (window.confirm('Удалить клиента?')) {
-      await db.collection('clients').doc(id).delete();
+      await deleteDoc(doc(db, 'clients', id));
     }
   };
 
@@ -90,7 +106,7 @@ function ClientsManager() {
     const bookings = [...client.bookings];
     bookings[bookingIdx].status = bookings[bookingIdx].status === 'done' ? 'pending' : 'done';
     const totalSum = bookings.reduce((sum, b) => sum + (b.payment || 0), 0);
-    await db.collection('clients').doc(clientId).update({ bookings, totalSum });
+    await updateDoc(doc(db, 'clients', clientId), { bookings, totalSum });
   };
 
   const handleBookingPaymentChange = (clientId, bookingIdx, value) => {
@@ -107,7 +123,7 @@ function ClientsManager() {
   const handleAddBooking = async (clientId) => {
     if (!newBooking.product || !newBooking.payment) return alert('Заполните поля брони');
 
-    const clientDoc = await db.collection('clients').doc(clientId).get();
+    const clientDoc = await getDoc(doc(db, 'clients', clientId));
     const clientData = clientDoc.data();
 
     const updatedBookings = [...clientData.bookings, {
@@ -125,7 +141,7 @@ function ClientsManager() {
     const totalOrders = (clientData.totalOrders || 0) + 1;
     const totalSum = updatedBookings.reduce((sum, b) => sum + (b.payment || 0), 0);
 
-    await db.collection('clients').doc(clientId).update({
+    await updateDoc(doc(db, 'clients', clientId), {
       bookings: updatedBookings,
       totalSum,
       totalOrders
@@ -139,15 +155,17 @@ function ClientsManager() {
       return alert('Заполните имя и хотя бы телефон или email');
     }
 
-    const phoneMatch = await db.collection('clients').where('phone', '==', newClient.phone).get();
-    const emailMatch = await db.collection('clients').where('email', '==', newClient.email).get();
+    const phoneQuery = query(collection(db, 'clients'), where('phone', '==', newClient.phone));
+    const emailQuery = query(collection(db, 'clients'), where('email', '==', newClient.email));
+    const phoneMatch = await getDocs(phoneQuery);
+    const emailMatch = await getDocs(emailQuery);
 
     if (!phoneMatch.empty || !emailMatch.empty) {
       alert('Клиент с таким телефоном или email уже существует!');
       return;
     }
 
-    await db.collection('clients').add({
+    await addDoc(collection(db, 'clients'), {
       ...newClient,
       bookings: [],
       totalSum: 0,
