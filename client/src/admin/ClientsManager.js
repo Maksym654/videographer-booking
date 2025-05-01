@@ -1,219 +1,156 @@
+// ClientsManager.js — обновлённый с учётом всех требований
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import './ClientsManager.css';
 import translations from '../translations';
+import { collection, getDocs, updateDoc, doc, addDoc, query, where } from 'firebase/firestore';
 
 const ClientsManager = () => {
   const [clients, setClients] = useState([]);
-  const [expandedClientId, setExpandedClientId] = useState(null);
-  const [editClientId, setEditClientId] = useState(null);
-  const [formValues, setFormValues] = useState({});
-  const t = translations['ru'];
+  const [editingClientId, setEditingClientId] = useState(null);
+  const [editValues, setEditValues] = useState({});
+  const [editAmounts, setEditAmounts] = useState({});
+  const [newBooking, setNewBooking] = useState({});
 
   useEffect(() => {
-    const fetchClients = async () => {
-      const snapshot = await getDocs(collection(db, 'clients'));
-      const clientsData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setClients(clientsData);
-    };
     fetchClients();
   }, []);
 
-  const toggleExpand = (clientId) => {
-    setExpandedClientId(expandedClientId === clientId ? null : clientId);
+  const fetchClients = async () => {
+    const snapshot = await getDocs(collection(db, 'bookings'));
+    const bookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const grouped = {};
+    bookings.forEach(b => {
+      const key = b.phone + b.email;
+      if (!grouped[key]) grouped[key] = { bookings: [], name: b.name, phone: b.phone, email: b.email };
+      grouped[key].bookings.push(b);
+    });
+    setClients(Object.values(grouped));
   };
 
-  const handleEditClick = (client) => {
-    setEditClientId(client.id);
-    setFormValues({
+  const handleClientFieldChange = (id, field, value) => {
+    setEditValues(prev => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
+  };
+
+  const saveClientChanges = async (client) => {
+    const updates = editValues[client.phone + client.email];
+    if (updates) {
+      const updatedClient = { ...client, ...updates };
+      const bookingsToUpdate = client.bookings;
+      for (let b of bookingsToUpdate) {
+        const ref = doc(db, 'bookings', b.id);
+        await updateDoc(ref, updates);
+      }
+      setEditingClientId(null);
+      fetchClients();
+    }
+  };
+
+  const handleAmountChange = (bookingId, value) => {
+    setEditAmounts(prev => ({ ...prev, [bookingId]: value }));
+  };
+
+  const saveAmount = async (bookingId) => {
+    const ref = doc(db, 'bookings', bookingId);
+    await updateDoc(ref, { amount: parseFloat(editAmounts[bookingId]) });
+    fetchClients();
+  };
+
+  const toggleStatus = async (bookingId, currentStatus) => {
+    const ref = doc(db, 'bookings', bookingId);
+    const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
+    await updateDoc(ref, { status: newStatus });
+    fetchClients();
+  };
+
+  const handleAddBooking = async (client, product, amount) => {
+    if (!product || !amount) return;
+    const ref = collection(db, 'bookings');
+    await addDoc(ref, {
       name: client.name,
       phone: client.phone,
       email: client.email,
-    });
-  };
-
-  const handleSaveClient = async (clientId) => {
-    const clientRef = doc(db, 'clients', clientId);
-    await updateDoc(clientRef, {
-      name: formValues.name,
-      phone: formValues.phone,
-      email: formValues.email,
-    });
-    setEditClientId(null);
-    location.reload(); // обновим данные
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
-
-  const getTotal = (bookings) =>
-    bookings.reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
-
-  const getPendingCount = (bookings) =>
-    bookings.filter((b) => b.status !== 'done').length;
-
-  const handleStatusToggle = async (clientId, bookingIndex) => {
-    const updatedClients = [...clients];
-    const client = updatedClients.find((c) => c.id === clientId);
-    const booking = client.bookings[bookingIndex];
-    booking.status = booking.status === 'done' ? 'pending' : 'done';
-    setClients(updatedClients);
-
-    await updateDoc(doc(db, 'clients', clientId), {
-      bookings: client.bookings,
-    });
-  };
-
-  const handleBookingChange = (clientId, index, field, value) => {
-    const updatedClients = [...clients];
-    updatedClients
-      .find((c) => c.id === clientId)
-      .bookings[index][field] = value;
-    setClients(updatedClients);
-  };
-
-  const handleAddBooking = async (clientId, newBooking) => {
-    if (!newBooking.product || !newBooking.amount) return;
-
-    const updatedClients = [...clients];
-    const client = updatedClients.find((c) => c.id === clientId);
-    client.bookings.push({
-      ...newBooking,
+      product,
+      amount: parseFloat(amount),
       status: 'pending',
+      date: new Date().toISOString(),
     });
-
-    await updateDoc(doc(db, 'clients', clientId), {
-      bookings: client.bookings,
-    });
-
-    setClients(updatedClients);
+    setNewBooking({});
+    fetchClients();
   };
 
   return (
     <div className="clients-manager">
-      {clients.map((client) => {
-        const total = getTotal(client.bookings || []);
-        const pending = getPendingCount(client.bookings || []);
-        const isExpanded = expandedClientId === client.id;
-        const isEditing = editClientId === client.id;
+      {clients.map(client => {
+        const clientId = client.phone + client.email;
+        const totalAmount = client.bookings.reduce((sum, b) => sum + (b.amount || 0), 0);
+        const pendingCount = client.bookings.filter(b => b.status !== 'done').length;
 
         return (
-          <div key={client.id} className="client-card">
-            <div className="client-summary" onClick={() => toggleExpand(client.id)}>
-              <div>
-                <strong>Имя:</strong> {client.name} <br />
-                <strong>Телефон:</strong> {client.phone} <br />
-                <strong>Email:</strong> {client.email} <br />
-                <strong>Общая сумма:</strong> {total}€
-              </div>
-              <div>
-                <span className="pending-count">
-                  Ожидает заказов: {pending}
-                </span>
-                <br />
-                <span className="total-count">Всего заказов: {client.bookings?.length || 0}</span>
-              </div>
-              <button
-                className="edit-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEditClick(client);
-                }}
-              >
-                ✏️
-              </button>
+          <div key={clientId} className="client-card">
+            <div className="client-header">
+              {editingClientId === clientId ? (
+                <>
+                  <input value={editValues[clientId]?.name || client.name} onChange={e => handleClientFieldChange(clientId, 'name', e.target.value)} />
+                  <input value={editValues[clientId]?.phone || client.phone} onChange={e => handleClientFieldChange(clientId, 'phone', e.target.value)} />
+                  <input value={editValues[clientId]?.email || client.email} onChange={e => handleClientFieldChange(clientId, 'email', e.target.value)} />
+                  <button onClick={() => saveClientChanges(client)}>Сохранить изменения</button>
+                </>
+              ) : (
+                <>
+                  <p><strong>Имя:</strong> {client.name}</p>
+                  <p><strong>Телефон:</strong> {client.phone}</p>
+                  <p><strong>Email:</strong> {client.email}</p>
+                  <p><strong>Общая сумма:</strong> {totalAmount}€ <span className="pending-count">Ожидает заказов: {pendingCount}</span> <span className="all-count">Всего заказов: {client.bookings.length}</span></p>
+                  <span className="edit-icon" onClick={() => setEditingClientId(clientId)}>✏️</span>
+                </>
+              )}
             </div>
 
-            {isExpanded && (
-              <div className="client-details">
-                {isEditing && (
-                  <div className="edit-fields">
-                    <input
-                      name="name"
-                      value={formValues.name}
-                      onChange={handleInputChange}
-                    />
-                    <input
-                      name="phone"
-                      value={formValues.phone}
-                      onChange={handleInputChange}
-                    />
-                    <input
-                      name="email"
-                      value={formValues.email}
-                      onChange={handleInputChange}
-                    />
-                    <button onClick={() => handleSaveClient(client.id)}>Сохранить изменения</button>
-                  </div>
+            <h4>Брони:</h4>
+            {client.bookings.map(booking => (
+              <div key={booking.id} className="booking-entry">
+                <div><strong>{booking.date}</strong> | {booking.product || '—'} | <strong>Сумма:</strong> {booking.amount || 0}€</div>
+                {booking.paymentDate && (
+                  <div className="stripe-info">✔️ Бронь оплачена через Stripe {booking.paymentDate}, сумма: {booking.paymentAmount}€</div>
                 )}
-
-                <h4>Брони:</h4>
-                {client.bookings?.map((b, idx) => (
-                  <div key={idx} className="booking-entry">
-                    <div>
-                      {b.date} {b.startTime && ` ${b.startTime} - ${b.endTime || ''}`} | {b.product} |
-                      <strong> Сумма: </strong> {b.amount}€
-                    </div>
-                    {b.paymentDate && (
-                      <div className="payment-info">
-                        ✅ Бронь оплачена через Stripe {b.paymentDate}, сумма: {b.paymentAmount || 50}€
-                      </div>
-                    )}
-                    <input
-                      value={b.amount}
-                      onChange={(e) =>
-                        handleBookingChange(client.id, idx, 'amount', e.target.value)
-                      }
-                    />
-                    <button
-                      className={b.status === 'done' ? 'done' : 'pending'}
-                      onClick={() => handleStatusToggle(client.id, idx)}
-                    >
-                      {b.status === 'done' ? 'Обработан' : 'Ожидается'}
-                    </button>
-                  </div>
-                ))}
-
-                <h5>Добавить новую бронь:</h5>
-                <AddBookingForm clientId={client.id} onAdd={handleAddBooking} />
+                <div className="booking-inline">
+                  <input
+                    type="number"
+                    value={editAmounts[booking.id] || ''}
+                    placeholder="Сумма"
+                    onChange={e => handleAmountChange(booking.id, e.target.value)}
+                  />
+                  <button onClick={() => saveAmount(booking.id)}>💾</button>
+                  <button
+                    className={`status-toggle ${booking.status === 'done' ? 'done' : 'pending'}`}
+                    onClick={() => toggleStatus(booking.id, booking.status)}
+                  >
+                    {booking.status === 'done' ? 'Обработан' : 'Ожидается'}
+                  </button>
+                </div>
               </div>
-            )}
+            ))}
+
+            <div className="add-booking-block">
+              <label>Добавить новую бронь:</label>
+              <select value={newBooking[clientId]?.product || ''} onChange={e => setNewBooking(prev => ({ ...prev, [clientId]: { ...prev[clientId], product: e.target.value } }))}>
+                <option value="">Тип съёмки</option>
+                <option value="UGC">UGC</option>
+                <option value="Interview">Interview</option>
+                <option value="Event">Event</option>
+              </select>
+              <input
+                type="number"
+                placeholder="Сумма оплаты"
+                value={newBooking[clientId]?.amount || ''}
+                onChange={e => setNewBooking(prev => ({ ...prev, [clientId]: { ...prev[clientId], amount: e.target.value } }))}
+              />
+              <button onClick={() => handleAddBooking(client, newBooking[clientId]?.product, newBooking[clientId]?.amount)}>Добавить бронь</button>
+            </div>
           </div>
         );
       })}
-    </div>
-  );
-};
-
-const AddBookingForm = ({ clientId, onAdd }) => {
-  const [product, setProduct] = useState('');
-  const [amount, setAmount] = useState('');
-
-  const handleAdd = () => {
-    onAdd(clientId, { product, amount });
-    setProduct('');
-    setAmount('');
-  };
-
-  return (
-    <div className="add-booking-form">
-      <input
-        placeholder="Тип съёмки"
-        value={product}
-        onChange={(e) => setProduct(e.target.value)}
-      />
-      <input
-        placeholder="Сумма оплаты"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
-      <button onClick={handleAdd}>Добавить бронь</button>
     </div>
   );
 };
