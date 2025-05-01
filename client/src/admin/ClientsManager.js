@@ -1,8 +1,8 @@
 // ClientsManager.js — обновлённый с учётом правок UI и логики
 import React, { useState, useEffect } from 'react';
-import { db } from '../../firebase';
+import { db } from '../firebase';
 import './ClientsManager.css';
-import translations from '../../translations';
+import translations from '../translations';
 
 const ClientsManager = () => {
   const [clients, setClients] = useState([]);
