@@ -180,7 +180,7 @@ function ClientsManager() {
       {sortedClients.map(client => {
         const pendingCount = countPendingBookings(client);
         return (
-          <div key={client.id} className="client-card" onClick={() => editClientId !== client.id && toggleEdit(client.id, client)}>
+          <div key={client.id} className="client-card">
             <div onClick={() => handleEditClick(client.id, client)} className="client-summary">
               <strong>Имя:</strong> {client.name} | <strong>Телефон:</strong> {client.phone} | <strong>Email:</strong> {client.email || '-'}
               <br />
