@@ -418,3 +418,23 @@ text-align: center;
 margin-top: 1rem;
 font-size: 1.05rem;
 }
+
+/* Принудительно тёмная тема и текст */
+html, body {
+background-color: #1e1b2e !important;
+color: #f0f0f0 !important;
+}
+
+.booking-form,
+.booking-form * {
+color: #f0f0f0 !important;
+}
+
+/* Цвет доступного времени */
+.available-time {
+color: #00e0d0 !important;
+font-weight: 500;
+text-align: center;
+margin-top: 1rem;
+font-size: 1.05rem;
+}
