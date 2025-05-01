@@ -1,184 +1,140 @@
+/* ClientsManager.css — стили для обновлённого ClientsManager */
+
+.clients-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
 .client-card {
-  background-color: #2a234a;
   border: 1px solid #b08aff;
   border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(176, 138, 255, 0.15);
+  padding: 15px;
+  background-color: #2a234a;
+  box-shadow: 0 4px 12px rgba(176, 138, 255, 0.2);
 }
 
-.client-header {
+.client-summary {
+  position: relative;
+  cursor: pointer;
+}
+
+.client-summary p {
+  margin: 5px 0;
+}
+
+.status-counts {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  margin-top: 5px;
 }
 
-.client-header .edit-icon {
-  cursor: pointer;
-  font-size: 1.1rem;
+.status-counts .pending {
+  color: orange;
+}
+
+.status-counts .completed {
+  color: green;
+}
+
+.edit-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
   background: none;
   border: none;
-  color: #b08aff;
+  font-size: 1.1rem;
+  cursor: pointer;
 }
 
-.client-info {
+.edit-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.edit-fields input {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #b08aff;
+  background-color: #1e1b2e;
+  color: #fff;
+}
+
+.edit-fields button {
+  background-color: #b08aff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.client-details {
+  margin-top: 10px;
+}
+
+.bookings-list {
+  margin-top: 10px;
+}
+
+.booking-item {
+  background-color: #211c37;
+  border: 1px solid #6f579e;
+  border-radius: 8px;
+  padding: 10px;
   margin-bottom: 10px;
 }
 
-.client-info span {
-  display: block;
-  margin-bottom: 4px;
-}
-
-.client-info input {
-  width: 100%;
-  padding: 6px;
-  font-size: 1rem;
-  background-color: #1e1b2e;
-  color: #fff;
-  border: 1px solid #b08aff;
-  border-radius: 8px;
-  margin-bottom: 6px;
-}
-
-.client-stats {
+.booking-info {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
-  font-size: 0.95rem;
+  margin-bottom: 5px;
 }
 
-.client-stats .pending {
-  color: orange;
-}
-
-.client-stats .total {
-  color: #ccc;
-}
-
-.booking-history {
-  margin-top: 20px;
-}
-
-.booking-entry {
-  background-color: #1e1b2e;
-  border: 1px solid #b08aff;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 10px;
-  font-size: 0.95rem;
-  position: relative;
-}
-
-.booking-entry strong {
-  font-weight: 600;
-}
-
-.booking-entry .stripe-info {
-  color: #28a745;
+.stripe-note {
+  color: #00c853;
   font-size: 0.85rem;
-  margin-top: 6px;
+  margin-bottom: 5px;
+}
+
+.booking-controls {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
 }
 
-.booking-entry input[type="number"] {
-  width: 80px;
-  padding: 4px 6px;
-  font-size: 0.95rem;
-  margin-left: 10px;
-  background-color: #1e1b2e;
-  color: #fff;
-  border: 1px solid #b08aff;
+.booking-controls input[type="number"] {
+  width: 70px;
+  padding: 5px;
   border-radius: 5px;
-}
-
-.booking-entry .save-button {
-  margin-left: 10px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  background-color: #b08aff;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.status-toggle {
-  margin-top: 10px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  background-color: transparent;
-  color: orange;
-  border: 1px solid orange;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.status-toggle.processed {
-  color: #28a745;
-  border-color: #28a745;
-}
-
-.status-toggle:hover {
-  opacity: 0.85;
-}
-
-.add-booking {
-  margin-top: 15px;
-}
-
-.add-booking input,
-.add-booking select {
-  margin-right: 10px;
-  padding: 6px;
-  border-radius: 6px;
   border: 1px solid #b08aff;
   background-color: #1e1b2e;
-  color: #fff;
-  font-size: 0.95rem;
+  color: white;
 }
 
-.add-booking button {
-  padding: 6px 12px;
-  background-color: #b08aff;
-  color: white;
+.booking-controls button {
+  padding: 5px 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
 }
 
-.add-booking button:hover {
-  background-color: #9c74e7;
+.booking-controls .pending {
+  background-color: orange;
+  color: white;
 }
 
-@media (max-width: 480px) {
-  .client-card {
-    padding: 15px;
-  }
+.booking-controls .completed {
+  background-color: green;
+  color: white;
+}
 
-  .client-info span,
-  .booking-entry {
-    font-size: 0.9rem;
-  }
-
-  .booking-entry input[type="number"] {
-    width: 70px;
-  }
-
-  .add-booking {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .add-booking input,
-  .add-booking select,
-  .add-booking button {
-    width: 100%;
-  }
+.booking-controls .save-btn {
+  background-color: #888;
+  color: white;
 }
