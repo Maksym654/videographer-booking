@@ -279,3 +279,8 @@ body {
 .react-calendar__navigation__next-button svg {
   display: none !important;
 }
+.react-calendar__tile.available-date:hover {
+  background-color: #2ecc71 !important; /* светлее зелёный при наведении */
+  color: #fff !important;
+  cursor: pointer;
+}
