@@ -186,12 +186,14 @@ function ClientsManager() {
               <button
                 className="edit-btn"
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   handleEditClick(client);
                 }}
               >
                 ✏️
               </button>
+
               {isEditing ? (
                 <>
                   <input value={editedData.name} onChange={(e) => handleChange('name', e.target.value)} />

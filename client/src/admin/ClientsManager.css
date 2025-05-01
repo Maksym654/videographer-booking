@@ -200,3 +200,23 @@
   cursor: pointer;
   z-index: 2;
 }
+@media (max-width: 600px) {
+  .client-summary {
+    padding-right: 40px; /* чтобы ✏️ не перекрывал текст */
+  }
+
+  .edit-btn {
+    top: 8px;
+    right: 8px;
+    font-size: 1.4rem;
+  }
+
+  .edit-icons {
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+
+  .client-summary input {
+    font-size: 0.95rem;
+  }
+}
