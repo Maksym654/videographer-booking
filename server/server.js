@@ -79,3 +79,40 @@ Email: ${email}
     res.status(500).json({ error: 'Ошибка отправки Telegram' });
   }
 });
+// --- Firebase и Firestore ---
+const { initializeApp } = require('firebase/app');
+const { getFirestore, collection, query, orderBy, onSnapshot } = require('firebase/firestore');
+const firebaseConfig = require('./firebaseConfig.json'); // не меняем путь!
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
+// 🔁 Слежение за новыми бронированиями
+let lastBookingId = null;
+
+const bookingsRef = collection(db, 'bookings');
+const bookingsQuery = query(bookingsRef, orderBy('createdAt', 'desc'));
+
+onSnapshot(bookingsQuery, snapshot => {
+  snapshot.docChanges().forEach(change => {
+    if (change.type === 'added') {
+      const booking = change.doc.data();
+      const id = change.doc.id;
+
+      if (id !== lastBookingId) {
+        lastBookingId = id;
+
+        const message = `
+📬 Новая бронь:
+👤 ${booking.name}
+📞 ${booking.phone}
+📧 ${booking.email}
+📸 ${booking.product}
+📅 ${booking.date} ${booking.startTime}–${booking.endTime}
+💶 Оплата: ${booking.payment || 0}€
+        `;
+
+        sendTelegramMessage(message);
+      }
+    }
+  });
+});
