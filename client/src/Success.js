@@ -18,9 +18,10 @@ function Success() {
     const sessionId = new URLSearchParams(location.search).get('session_id');
     console.log('🔁 Получен session_id:', sessionId);
 
+    // Создание данных для бронирования без добавления payment.id
     const bookingData = {
       ...formData,
-      payment: 50,
+      payment: 50, // Статичная сумма
       paymentDate: new Date().toISOString(),
       stripeSessionId: sessionId,
     };
@@ -37,7 +38,7 @@ function Success() {
       .then(() => {
         console.log('✅ Бронирование успешно сохранено');
         setStatus('success');
-        // localStorage.removeItem('bookingFormData'); // можно включить позже
+        // localStorage.removeItem('bookingFormData'); // Можно включить позже
       })
       .catch(err => {
         console.error('❌ Ошибка при сохранении брони:', err);
