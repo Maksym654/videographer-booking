@@ -10,7 +10,10 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // CORS
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',  // Локальная разработка
+    'https://videographer-booking-client.onrender.com'  // Домен на Render.com
+  ],
   methods: ['GET', 'POST']
 }));
 app.use(express.json());
