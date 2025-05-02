@@ -1,3 +1,27 @@
+import { db } from '../firebase';
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  doc,
+  query,
+  where,
+  getDoc,
+  setDoc
+} from 'firebase/firestore';
+
+// ✅ Получаем только свободные даты
+export const getAvailableDates = async () => {
+  const q = query(collection(db, 'availabledates'), where('isBooked', '==', false));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map((docItem) => ({
+    id: docItem.id,
+    ...docItem.data()
+  }));
+};
+
+// ✅ Создание брони + синхронизация с clients
 export const createBooking = async (formData) => {
   const {
     name,
@@ -86,5 +110,12 @@ export const createBooking = async (formData) => {
     })
   });
 };
-export { getAvailableDates, getBookings };
 
+// ✅ Получение всех бронирований
+export const getBookings = async () => {
+  const querySnapshot = await getDocs(collection(db, 'bookings'));
+  return querySnapshot.docs.map((docItem) => ({
+    id: docItem.id,
+    ...docItem.data()
+  }));
+};
