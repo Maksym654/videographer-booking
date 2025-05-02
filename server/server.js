@@ -63,12 +63,14 @@ app.listen(PORT, () => {
 const { sendTelegramMessage } = require('./telegramBot');
 const { generateCalendarLink, formatDateTime } = require('./utils/calendarUtils');
 
-const { initializeApp } = require('firebase/app');
-const { getFirestore, collection, query, orderBy, onSnapshot } = require('firebase/firestore');
+const admin = require('firebase-admin');
+const serviceAccount = require('./firebaseConfig.json'); // путь не менять!
 
-const firebaseConfig = require('./firebaseConfig.json'); // путь не менять!
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const db = admin.firestore();
 
 let lastBookingId = null;
 
