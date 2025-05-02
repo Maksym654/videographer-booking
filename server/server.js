@@ -68,7 +68,7 @@ const { generateCalendarLink, formatDateTime } = require('./utils/calendarUtils'
 
 // Firebase Admin SDK с конфигом из переменной окружения
 const admin = require('firebase-admin');
-const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG.replace(/\\n/g, '\n'));
+const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
