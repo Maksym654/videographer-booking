@@ -65,48 +65,4 @@ app.listen(PORT, () => {
   console.log(`✅ Сервер запущен на http://localhost:${PORT}`);
 });
 
-// --- Telegram уведомления при новой броне ---
-const { sendTelegramMessage } = require('./telegramBot');
-const { generateCalendarLink, formatDateTime } = require('./utils/calendarUtils');
-
-// Firebase Admin SDK с конфигом из переменной окружения
-const admin = require('firebase-admin');
-const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-const { getFirestore } = require('firebase-admin/firestore');
-const firestore = getFirestore();
-const { onSnapshot } = require('firebase-admin/firestore'); // Только onSnapshot, если используешь его
-
-let lastBookingId = null;
-
-const bookingsRef = firestore.collection('bookings');
-const bookingsQuery = bookingsRef.orderBy('createdAt', 'desc');
-
-bookingsQuery.onSnapshot(snapshot => {
-  snapshot.docChanges().forEach(change => {
-    if (change.type === 'added') {
-      const booking = change.doc.data();
-      const id = change.doc.id;
-
-      if (id !== lastBookingId) {
-        lastBookingId = id;
-
-        const message = `
-📬 Новая бронь:
-👤 ${booking.name}
-📞 ${booking.phone}
-📧 ${booking.email}
-📸 ${booking.product}
-📅 ${booking.date} ${booking.startTime}–${booking.endTime}
-💶 Оплата: ${booking.payment || 0}€
-`;
-
-        sendTelegramMessage(message);
-      }
-    }
-  });
-});
+// --- УДАЛЯЕМ ЛОГИКУ ОТПРАВКИ УВЕДОМЛЕНИЙ В TELEGRAM ---

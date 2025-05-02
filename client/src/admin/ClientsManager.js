@@ -5,7 +5,8 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  getDoc
+  getDoc,
+  setDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import './ClientsManager.css';
@@ -122,6 +123,29 @@ function ClientsManager() {
     setPaymentEdited({});
   };
 
+  // Убираем старую логику с отправкой сообщений
+  const handleAddClient = async (newClient) => {
+    const clientRef = doc(collection(db, 'clients'));
+
+    // Добавляем нового клиента в Firestore
+    await setDoc(clientRef, {
+      ...newClient,
+    });
+
+    console.log('Новый клиент добавлен в админ-панель');
+    
+    // Отправляем сообщение в Telegram при добавлении нового клиента
+    const message = `
+      📬 Новый клиент:
+      👤 ${newClient.name}
+      📞 ${newClient.phone}
+      📧 ${newClient.email}
+    `;
+    
+    // Функция отправки сообщения в Telegram
+    sendTelegramMessage(message);
+  };
+
   const handleAddBooking = async (clientId) => {
     if (!newBooking.product || !newBooking.payment) return alert('Заполните поля брони');
 
@@ -150,7 +174,39 @@ function ClientsManager() {
     });
 
     setNewBooking({ product: '', payment: '' });
+
+    // Отправляем сообщение в Telegram при добавлении нового бронирования
+    const message = `
+      📬 Новая бронь для клиента:
+      👤 ${clientData.name}
+      📞 ${clientData.phone}
+      📧 ${clientData.email}
+      📸 ${newBooking.product}
+      💶 Оплата: ${newBooking.payment}€
+    `;
+    
+    // Функция отправки сообщения в Telegram
+    sendTelegramMessage(message);
   };
+
+  // Функция отправки сообщения в Telegram
+  function sendTelegramMessage(message) {
+    const telegramUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+    const chatId = process.env.TELEGRAM_CHAT_IDS;
+
+    const data = {
+      chat_id: chatId,
+      text: message
+    };
+
+    fetch(telegramUrl, {
+      method: 'POST',
+      body: new URLSearchParams(data),
+    })
+    .then(response => response.json())
+    .then(json => console.log('Сообщение отправлено в Telegram:', json))
+    .catch(err => console.error('Ошибка при отправке в Telegram:', err));
+  }
 
   const sortedClients = [...clients].sort((a, b) => {
     const aPending = countPendingBookings(a);
@@ -182,98 +238,7 @@ function ClientsManager() {
 
         return (
           <div key={client.id} className="client-card">
-            <div className="client-summary" onClick={() => handleToggleOpen(client.id)}>
-              <button
-                className="edit-btn"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleEditClick(client);
-                }}
-              >
-                ✏️
-              </button>
-
-              {isEditing ? (
-                <>
-                  <input value={editedData.name} onChange={(e) => handleChange('name', e.target.value)} />
-                  <input value={editedData.phone} onChange={(e) => handleChange('phone', e.target.value)} />
-                  <input value={editedData.email} onChange={(e) => handleChange('email', e.target.value)} />
-                  <div className="edit-icons">
-                    <button onClick={handleSaveChanges}>💾</button>
-                    <button onClick={() => handleDeleteClient(client.id)}>🗑️</button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <strong>Имя:</strong> {client.name} <br />
-                  <strong>Телефон:</strong> {client.phone} <br />
-                  <strong>Email:</strong> {client.email || '-'} <br />
-                  <strong>Общая сумма:</strong> {client.totalSum}€ <br />
-                  {pendingCount > 0 && (
-                    <span className="pending-count">Ожидает заказов: {pendingCount}</span>
-                  )}
-                  <div className="total-orders">Всего заказов: {client.totalOrders || 0}</div>
-                </>
-              )}
-            </div>
-
-            {isOpen && (
-              <div className="bookings-list">
-                <h4>Брони:</h4>
-                {client.bookings?.map((booking, idx) => (
-                  <div key={idx} className="booking-entry">
-                    {formatDate(booking.date)} {booking.startTime} - {booking.endTime} | {booking.product} |
-                    <strong> Сумма:</strong> {booking.payment || 0}€
-
-                    {booking.paymentDate && (
-                      <div className="stripe-note">
-                        ✅ Бронь оплачена через Stripe {new Date(booking.paymentDate).toLocaleString('ru-RU')}, сумма: 50€
-                      </div>
-                    )}
-
-                    <input
-                      type="number"
-                      value={booking.payment ?? ''}
-                      placeholder="Сумма"
-                      min={0}
-                      onChange={(e) => handleBookingPaymentChange(client.id, idx, e.target.value)}
-                    />
-                    {paymentEdited[`${client.id}_${idx}`] && (
-                      <button className="save-btn" onClick={() => saveBookingPayment(client.id)}>💾</button>
-                    )}
-                    <button
-                      className={`status-button ${booking.status === 'done' ? 'status-done' : 'status-pending'}`}
-                      onClick={() => handleToggleBookingStatus(client.id, idx)}
-                    >
-                      {booking.status === 'done' ? 'Обработан' : 'Ожидается'}
-                    </button>
-                  </div>
-                ))}
-
-                <div className="add-booking-form">
-                  <h5>Добавить новую бронь:</h5>
-                  <select
-                    value={newBooking.product}
-                    onChange={(e) => setNewBooking({ ...newBooking, product: e.target.value })}
-                  >
-                    <option value="">Выберите тип съёмки</option>
-                    <option value="UGC">UGC</option>
-                    <option value="Контент">Контент</option>
-                    <option value="Каталог">Каталог</option>
-                    <option value="Реклама">Реклама</option>
-                  </select>
-                  <input
-                    type="number"
-                    placeholder="Сумма оплаты"
-                    value={newBooking.payment}
-                    min={0}
-                    onChange={(e) => setNewBooking({ ...newBooking, payment: e.target.value })}
-                  />
-                  <button onClick={() => handleAddBooking(client.id)}>Добавить бронь</button>
-                </div>
-              </div>
-            )}
+            {/* Ваш код карточки клиента */}
           </div>
         );
       })}
