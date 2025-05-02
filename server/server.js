@@ -13,10 +13,9 @@ app.use(cors({
   origin: 'http://localhost:3000',
   methods: ['GET', 'POST']
 }));
-
 app.use(express.json());
 
-// Свободные даты
+// --- Google Sheets: Свободные даты ---
 app.get('/api/available-dates', async (req, res) => {
   try {
     const dates = await getAvailableDates();
@@ -26,7 +25,7 @@ app.get('/api/available-dates', async (req, res) => {
   }
 });
 
-// Stripe Checkout
+// --- Stripe Checkout ---
 app.post('/create-checkout-session', async (req, res) => {
   const { name, email, phone, product } = req.body;
 
@@ -38,7 +37,10 @@ app.post('/create-checkout-session', async (req, res) => {
       line_items: [{
         price_data: {
           currency: 'eur',
-          product_data: { name: `Бронирование: ${product}`, description: `Имя: ${name}, Телефон: ${phone}` },
+          product_data: {
+            name: `Бронирование: ${product}`,
+            description: `Имя: ${name}, Телефон: ${phone}`
+          },
           unit_amount: 5000,
         },
         quantity: 1,
@@ -55,29 +57,39 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
-// Запуск сервера
+// --- Запуск сервера ---
 app.listen(PORT, () => {
   console.log(`✅ Сервер запущен на http://localhost:${PORT}`);
 });
-// --- 🔔 Telegram уведомление при добавлении новой брони ---
+
+// --- Telegram уведомления при новой броне ---
 const { sendTelegramMessage } = require('./telegramBot');
 const { generateCalendarLink, formatDateTime } = require('./utils/calendarUtils');
 
+// Firebase Admin SDK с конфигом из переменной окружения
 const admin = require('firebase-admin');
-const serviceAccount = require('./firebaseConfig.json'); // путь не менять!
+
+const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-const db = admin.firestore();
+const { getFirestore } = require('firebase-admin/firestore');
+const firestore = getFirestore();
+
+
+// Firestore: подписка на новые брони
+const { collection, query, orderBy, onSnapshot } = require('firebase/firestore');
+const { getFirestore } = require('firebase-admin/firestore');
+const firestore = getFirestore();
 
 let lastBookingId = null;
 
-const bookingsRef = collection(db, 'bookings');
-const bookingsQuery = query(bookingsRef, orderBy('createdAt', 'desc'));
+const bookingsRef = firestore.collection('bookings');
+const bookingsQuery = bookingsRef.orderBy('createdAt', 'desc');
 
-onSnapshot(bookingsQuery, snapshot => {
+bookingsQuery.onSnapshot(snapshot => {
   snapshot.docChanges().forEach(change => {
     if (change.type === 'added') {
       const booking = change.doc.data();
