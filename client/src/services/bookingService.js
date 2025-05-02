@@ -86,4 +86,5 @@ export const createBooking = async (formData) => {
     })
   });
 };
-export { getAvailableDates, createBooking, getBookings };
+export { getAvailableDates, getBookings };
+
