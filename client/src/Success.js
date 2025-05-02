@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createBooking } from './services/bookingService';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function Success() {
@@ -9,29 +8,41 @@ function Success() {
 
   useEffect(() => {
     const savedData = localStorage.getItem('bookingFormData');
-
     if (!savedData) {
+      console.warn('❌ Нет данных в localStorage!');
       setStatus('error');
       return;
     }
 
     const formData = JSON.parse(savedData);
     const sessionId = new URLSearchParams(location.search).get('session_id');
+    console.log('🔁 Получен session_id:', sessionId);
 
-    // Обогащаем данные для записи:
     const bookingData = {
       ...formData,
-      payment: 50, // сумма предоплаты
-      paymentDate: new Date().toISOString(), // дата оплаты
-      stripeSessionId: sessionId, // ID сессии Stripe (для учёта)
+      payment: 50,
+      paymentDate: new Date().toISOString(),
+      stripeSessionId: sessionId,
     };
 
-    createBooking(bookingData)
-      .then(() => {
-        setStatus('success');
-        localStorage.removeItem('bookingFormData');
+    fetch('https://videographer-booking-server.onrender.com/api/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingData),
+    })
+      .then(res => {
+        if (!res.ok) throw new Error(`Ошибка ${res.status}`);
+        return res.json();
       })
-      .catch(() => setStatus('error'));
+      .then(() => {
+        console.log('✅ Бронирование успешно сохранено');
+        setStatus('success');
+        // localStorage.removeItem('bookingFormData'); // можно включить позже
+      })
+      .catch(err => {
+        console.error('❌ Ошибка при сохранении брони:', err);
+        setStatus('error');
+      });
   }, [location.search]);
 
   const handleBack = () => {
