@@ -43,3 +43,39 @@ app.post('/create-checkout-session', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Сервер запущен на порту ${PORT}`);
 });
+
+const { sendTelegramMessage } = require('./telegramBot');
+const { generateCalendarLink, formatDateTime } = require('./utils/calendarUtils');
+
+app.post('/api/notify', async (req, res) => {
+  const { name, phone, email, product, date, startTime, endTime } = req.body;
+
+  try {
+    const calendarLink = generateCalendarLink({
+      name,
+      phone,
+      email,
+      product,
+      date,
+      startTime,
+      endTime
+    });
+
+    const message = `
+🆕 Новый клиент оплатил бронь!
+Имя: ${name}
+Телефон: ${phone}
+Email: ${email}
+Тип: ${product}
+Дата: ${formatDateTime(date, startTime)}
+
+👉 <a href="https://videographer-booking-client.onrender.com/admin">Просмотреть</a> | 📅 <a href="${calendarLink}">Загрузить в календарь</a>
+    `;
+
+    await sendTelegramMessage(message);
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Ошибка Telegram:', err);
+    res.status(500).json({ error: 'Ошибка отправки Telegram' });
+  }
+});

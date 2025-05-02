@@ -1,27 +1,3 @@
-import { db } from '../firebase';
-import {
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  doc,
-  query,
-  where,
-  getDoc,
-  setDoc
-} from 'firebase/firestore';
-
-// Получаем только свободные даты
-export const getAvailableDates = async () => {
-  const q = query(collection(db, 'availabledates'), where('isBooked', '==', false));
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((docItem) => ({
-    id: docItem.id,
-    ...docItem.data()
-  }));
-};
-
-// Создание брони + синхронизация с clients
 export const createBooking = async (formData) => {
   const {
     name,
@@ -59,7 +35,7 @@ export const createBooking = async (formData) => {
     agreePrepayment
   };
 
-  // Добавляем запись в bookings (если нужно)
+  // Добавляем запись в bookings
   await addDoc(collection(db, 'bookings'), {
     name,
     phone,
@@ -70,7 +46,7 @@ export const createBooking = async (formData) => {
   // Помечаем дату как занятую
   await updateDoc(dateRef, { isBooked: true });
 
-  // Проверяем клиента по email или телефону
+  // Проверяем клиента
   const clientsSnapshot = await getDocs(collection(db, 'clients'));
   const existingClient = clientsSnapshot.docs.find(docItem => {
     const data = docItem.data();
@@ -94,13 +70,19 @@ export const createBooking = async (formData) => {
       status: 'pending'
     });
   }
-};
 
-// Получение всех бронирований
-export const getBookings = async () => {
-  const querySnapshot = await getDocs(collection(db, 'bookings'));
-  return querySnapshot.docs.map((docItem) => ({
-    id: docItem.id,
-    ...docItem.data()
-  }));
+  // ✅ Уведомление в Telegram после успешного сохранения:
+  await fetch('https://videographer-booking-server.onrender.com/api/notify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+      phone,
+      email,
+      product,
+      date: dateData.date,
+      startTime: dateData.timeStart,
+      endTime: dateData.timeEnd
+    })
+  });
 };
