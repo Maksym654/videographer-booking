@@ -58,14 +58,23 @@ function BookingForm() {
         mode: 'cors',
       });
   
-      const data = await response.json();
-      const sessionId = data.sessionId;
-  
-      if (!sessionId) {
-        alert('Ошибка: sessionId не получен');
+      let data;
+        try {
+        data = await response.json();
+}       catch (err) {
+        console.error('Ошибка при чтении JSON:', err);
+        alert('Ошибка при получении ответа от сервера');
         return;
-      }
-  
+}
+
+const sessionId = data.sessionId;
+
+if (!sessionId) {
+  console.error('Ошибка: ответ от сервера без sessionId:', data);
+  alert('Ошибка: sessionId не получен');
+  return;
+}
+
       // 2. Сохраняем данные формы на сервере
       await fetch('https://videographer-booking-server.onrender.com/api/temp-booking', {
         method: 'POST',
