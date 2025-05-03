@@ -7,54 +7,53 @@ function Success() {
   const location = useLocation();
 
   useEffect(() => {
-    const sessionId = new URLSearchParams(location.search).get('session_id');
-    if (!sessionId) {
-      console.warn('❌ session_id не найден в URL');
-      setStatus('error');
-      return;
-    }
-  
-    console.log('🔁 Получен session_id:', sessionId);
-  
-    // Получаем форму с сервера
-    fetch(`https://videographer-booking-server.onrender.com/api/temp-booking?session_id=${sessionId}`)
-      .then(res => {
-        if (!res.ok) throw new Error('❌ Данные по session_id не найдены на сервере');
-        return res.json();
-      })
-      .then((formData) => {
+    const submitBooking = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionId = urlParams.get('session_id');
+      if (!sessionId) return;
+
+      try {
+        const stripeRes = await fetch(`https://videographer-booking-server.onrender.com/api/checkout-session?session_id=${sessionId}`);
+        const stripeData = await stripeRes.json();
+        const metadata = stripeData?.metadata;
+
+        if (!metadata) throw new Error('Отсутствует metadata из Stripe session');
+
         const bookingData = {
-          name: formData.name,
-          phone: formData.phone,
-          email: formData.email,
-          product: formData.product,
-          date: selectedDate?.date || formData.date,
-          startTime: selectedDate?.startTime || formData.startTime,
-          endTime: selectedDate?.endTime || formData.endTime,
+          name: metadata.name || '',
+          phone: metadata.phone || '',
+          email: metadata.email || '',
+          product: metadata.product || '',
+          date: metadata.date || null,
+          startTime: metadata.startTime || '',
+          endTime: metadata.endTime || '',
           paymentAmount: 50,
           paymentDate: new Date().toISOString(),
-          stripeSessionId: sessionId,
-        };        
-  
-        return fetch('https://videographer-booking-server.onrender.com/api/book', {
+        };
+
+        console.log('📦 bookingData to server:', bookingData);
+
+        if (!bookingData.date) throw new Error('❌ Дата брони не получена из metadata');
+
+        const res = await fetch('https://videographer-booking-server.onrender.com/api/book', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(bookingData),
         });
-      })
-      .then(res => {
-        if (!res.ok) throw new Error(`Ошибка при сохранении брони: ${res.status}`);
-        return res.json();
-      })
-      .then(() => {
-        console.log('✅ Бронирование успешно сохранено');
+
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error);
+
+        console.log('✅ Booking saved successfully');
         setStatus('success');
-      })
-      .catch(err => {
-        console.error(err.message || '❌ Ошибка при обработке брони');
+      } catch (error) {
+        console.error('❌ Ошибка при сохранении брони:', error.message);
         setStatus('error');
-      });
-  }, [location.search]);  
+      }
+    };
+
+    submitBooking();
+  }, [location.search]);
 
   const handleBack = () => {
     navigate('/');
