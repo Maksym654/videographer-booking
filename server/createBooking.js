@@ -1,7 +1,6 @@
-const admin = require('./firebaseAdmin');
+const { db } = require('./firebaseAdmin'); // ✅
 const sendTelegramNotification = require('./telegramBot');
 
-const db = admin.firestore();
 
 async function createBooking(data) {
   try {
