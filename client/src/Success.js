@@ -24,11 +24,17 @@ function Success() {
       })
       .then((formData) => {
         const bookingData = {
-          ...formData,
-          payment: 50,
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          product: formData.product,
+          date: selectedDate?.date || formData.date,
+          startTime: selectedDate?.startTime || formData.startTime,
+          endTime: selectedDate?.endTime || formData.endTime,
+          paymentAmount: 50,
           paymentDate: new Date().toISOString(),
           stripeSessionId: sessionId,
-        };
+        };        
   
         return fetch('https://videographer-booking-server.onrender.com/api/book', {
           method: 'POST',
