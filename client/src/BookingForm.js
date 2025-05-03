@@ -49,48 +49,53 @@ function BookingForm() {
       return;
     }
   
+    const selected = availableDates.find((d) => d.id === formData.dateId);
+    if (!selected) {
+      alert('Ошибка: дата не найдена');
+      return;
+    }
+  
+    const fullData = {
+      ...formData,
+      date: selected.date,
+      startTime: selected.timeStart,
+      endTime: selected.timeEnd,
+    };
+  
     try {
       // 1. Создаём Stripe-сессию
       const response = await fetch('https://videographer-booking-server.onrender.com/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(fullData),
         mode: 'cors',
       });
   
-      let data;
-        try {
-        data = await response.json();
-}       catch (err) {
-        console.error('Ошибка при чтении JSON:', err);
-        alert('Ошибка при получении ответа от сервера');
+      const data = await response.json();
+      const sessionId = data.sessionId;
+  
+      if (!sessionId) {
+        console.error('Ошибка: sessionId не получен', data);
+        alert('Ошибка: sessionId не получен');
         return;
-}
-
-const sessionId = data.sessionId;
-
-if (!sessionId) {
-  console.error('Ошибка: ответ от сервера без sessionId:', data);
-  alert('Ошибка: sessionId не получен');
-  return;
-}
-
-      // 2. Сохраняем данные формы на сервере
+      }
+  
+      // 2. Сохраняем данные формы временно
       await fetch('https://videographer-booking-server.onrender.com/api/temp-booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, formData }),
+        body: JSON.stringify({ sessionId, formData: fullData }),
         mode: 'cors',
       });
   
-      // 3. Редирект в Stripe
+      // 3. Перенаправляем на Stripe
       const stripe = await stripePromise;
       await stripe.redirectToCheckout({ sessionId });
     } catch (error) {
       console.error('Ошибка при создании Stripe-сессии:', error);
       alert('Ошибка при создании оплаты. Попробуйте позже.');
     }
-  };  
+  };   
 
   const tileClassName = ({ date }) => {
     const formatted = date.toISOString().split('T')[0];
