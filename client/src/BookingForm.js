@@ -48,24 +48,40 @@ function BookingForm() {
       alert(t.fillError);
       return;
     }
-
+  
     try {
-      localStorage.setItem('bookingFormData', JSON.stringify(formData));
+      // 1. Создаём Stripe-сессию
       const response = await fetch('https://videographer-booking-server.onrender.com/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
         mode: 'cors',
-      });      
-
+      });
+  
       const data = await response.json();
+      const sessionId = data.sessionId;
+  
+      if (!sessionId) {
+        alert('Ошибка: sessionId не получен');
+        return;
+      }
+  
+      // 2. Сохраняем данные формы на сервере
+      await fetch('https://videographer-booking-server.onrender.com/api/temp-booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, formData }),
+        mode: 'cors',
+      });
+  
+      // 3. Редирект в Stripe
       const stripe = await stripePromise;
-      await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      await stripe.redirectToCheckout({ sessionId });
     } catch (error) {
       console.error('Ошибка при создании Stripe-сессии:', error);
       alert('Ошибка при создании оплаты. Попробуйте позже.');
     }
-  };
+  };  
 
   const tileClassName = ({ date }) => {
     const formatted = date.toISOString().split('T')[0];

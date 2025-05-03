@@ -7,44 +7,48 @@ function Success() {
   const location = useLocation();
 
   useEffect(() => {
-    const savedData = localStorage.getItem('bookingFormData');
-    if (!savedData) {
-      console.warn('❌ Нет данных в localStorage!');
+    const sessionId = new URLSearchParams(location.search).get('session_id');
+    if (!sessionId) {
+      console.warn('❌ session_id не найден в URL');
       setStatus('error');
       return;
     }
-
-    const formData = JSON.parse(savedData);
-    const sessionId = new URLSearchParams(location.search).get('session_id');
+  
     console.log('🔁 Получен session_id:', sessionId);
-
-    // Создание данных для бронирования без добавления payment.id
-    const bookingData = {
-      ...formData,
-      payment: 50, // Статичная сумма
-      paymentDate: new Date().toISOString(),
-      stripeSessionId: sessionId,
-    };
-
-    fetch('https://videographer-booking-server.onrender.com/api/book', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bookingData),
-    })
+  
+    // Получаем форму с сервера
+    fetch(`https://videographer-booking-server.onrender.com/api/temp-booking?session_id=${sessionId}`)
       .then(res => {
-        if (!res.ok) throw new Error(`Ошибка ${res.status}`);
+        if (!res.ok) throw new Error('❌ Данные по session_id не найдены на сервере');
+        return res.json();
+      })
+      .then((formData) => {
+        const bookingData = {
+          ...formData,
+          payment: 50,
+          paymentDate: new Date().toISOString(),
+          stripeSessionId: sessionId,
+        };
+  
+        return fetch('https://videographer-booking-server.onrender.com/api/book', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bookingData),
+        });
+      })
+      .then(res => {
+        if (!res.ok) throw new Error(`Ошибка при сохранении брони: ${res.status}`);
         return res.json();
       })
       .then(() => {
         console.log('✅ Бронирование успешно сохранено');
         setStatus('success');
-        // localStorage.removeItem('bookingFormData'); // Можно включить позже
       })
       .catch(err => {
-        console.error('❌ Ошибка при сохранении брони:', err);
+        console.error(err.message || '❌ Ошибка при обработке брони');
         setStatus('error');
       });
-  }, [location.search]);
+  }, [location.search]);  
 
   const handleBack = () => {
     navigate('/');

@@ -59,6 +59,26 @@ app.post('/create-checkout-session', async (req, res) => {
     res.status(500).json({ error: 'Ошибка создания Stripe-сессии' });
   }
 });
+// --- ВРЕМЕННОЕ ХРАНИЛИЩЕ ДЛЯ bookingFormData ---
+const tempBookings = new Map();
+
+app.post('/api/temp-booking', (req, res) => {
+  const { sessionId, formData } = req.body;
+  if (!sessionId || !formData) return res.status(400).json({ error: 'Missing data' });
+
+  tempBookings.set(sessionId, formData);
+  res.status(200).json({ message: 'Saved temporarily' });
+});
+
+app.get('/api/temp-booking', (req, res) => {
+  const sessionId = req.query.session_id;
+  if (!sessionId || !tempBookings.has(sessionId)) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
+  const formData = tempBookings.get(sessionId);
+  res.status(200).json(formData);
+});
 
 // --- Запуск сервера ---
 app.listen(PORT, () => {
