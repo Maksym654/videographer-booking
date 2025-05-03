@@ -47,4 +47,4 @@ async function createBooking(data) {
   }
 }
 
-module.exports = createBooking;
+module.exports = { createBooking };
