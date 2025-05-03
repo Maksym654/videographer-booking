@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 function Success() {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState('loading');
+  const [lang, setLang] = useState('de'); // теперь всегда начинаем с немецкого
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
@@ -43,38 +44,48 @@ function Success() {
     fetchSession();
   }, [searchParams]);
 
+  const messages = {
+    de: {
+      text: '✅ Danke! Ihre Buchung war erfolgreich. Wir werden Sie kontaktieren. Bei Fragen schreiben Sie mir:',
+      telegram: 'Telegram',
+      whatsapp: 'WhatsApp',
+    },
+    en: {
+      text: '✅ Thank you! Your booking was successful. We will contact you. If you have any questions, feel free to contact me:',
+      telegram: 'Telegram',
+      whatsapp: 'WhatsApp',
+    },
+    ru: {
+      text: '✅ Спасибо! Бронь успешно. Мы с вами свяжемся. Если есть вопросы — напишите мне:',
+      telegram: 'Телеграм',
+      whatsapp: 'Ватсап',
+    },
+    ua: {
+      text: '✅ Дякуємо! Бронювання успішне. Ми з вами зв’яжемось. Якщо є питання — напишіть мені:',
+      telegram: 'Телеграм',
+      whatsapp: 'Ватсап',
+    }
+  };
+
+  const handleLangChange = (e) => {
+    setLang(e.target.value);
+  };
+
   if (status === 'loading') return <h2>Загрузка...</h2>;
 
   if (status === 'success') {
-    const lang = localStorage.getItem('bookingLang') || 'de';
-
-    const messages = {
-      de: {
-        text: '✅ Danke! Ihre Buchung war erfolgreich. Wir werden Sie kontaktieren. Bei Fragen schreiben Sie mir:',
-        telegram: 'Telegram',
-        whatsapp: 'WhatsApp',
-      },
-      en: {
-        text: '✅ Thank you! Your booking was successful. We will contact you. If you have any questions, feel free to contact me:',
-        telegram: 'Telegram',
-        whatsapp: 'WhatsApp',
-      },
-      ru: {
-        text: '✅ Спасибо! Бронь успешно. Мы с вами свяжемся. Если есть вопросы — напишите мне:',
-        telegram: 'Телеграм',
-        whatsapp: 'Ватсап',
-      },
-      ua: {
-        text: '✅ Дякуємо! Бронювання успішне. Ми з вами зв’яжемось. Якщо є питання — напишіть мені:',
-        telegram: 'Телеграм',
-        whatsapp: 'Ватсап',
-      }
-    };
-
     const m = messages[lang];
 
     return (
       <div style={{ textAlign: 'center', padding: '2rem' }}>
+        <div style={{ marginBottom: '1rem' }}>
+          <select value={lang} onChange={handleLangChange}>
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+            <option value="ru">Русский</option>
+            <option value="ua">Українська</option>
+          </select>
+        </div>
         <p>{m.text}</p>
         <p>
           <a href="https://t.me/hanna_dzhos" target="_blank" rel="noopener noreferrer" style={{ marginRight: '1rem' }}>
