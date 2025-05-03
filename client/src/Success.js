@@ -12,10 +12,13 @@ function Success() {
       return;
     }
 
+    console.log('✅ session_id найден:', sessionId);
+
     const fetchSession = async () => {
       try {
         const res = await fetch(`https://videographer-booking-server.onrender.com/api/session-details?session_id=${sessionId}`);
         const data = await res.json();
+        console.log('✅ session-details data:', data);
 
         if (!data.metadata) throw new Error('Metadata not found');
 
@@ -43,40 +46,49 @@ function Success() {
     fetchSession();
   }, [searchParams]);
 
+  // Старый return — временно закомментирован
+  /*
+  if (status === 'loading') return <h2>Загрузка...</h2>;
+  if (status === 'success') return <h2>✅ Спасибо! Бронь успешно сохранена. Возврат на главную через 3 секунды...</h2>;
+  return <h2>⚠️ Ошибка! Попробуйте позже.</h2>;
+  */
+
+  const lang = localStorage.getItem('bookingLang') || 'de';
+  const messages = {
+    de: {
+      text: '✅ Danke! Ihre Buchung war erfolgreich. Wir werden Sie kontaktieren. Bei Fragen schreiben Sie mir:',
+      telegram: 'Telegram',
+      whatsapp: 'WhatsApp',
+    },
+    en: {
+      text: '✅ Thank you! Your booking was successful. We will contact you. If you have any questions, feel free to contact me:',
+      telegram: 'Telegram',
+      whatsapp: 'WhatsApp',
+    },
+    ru: {
+      text: '✅ Спасибо! Бронь успешно. Мы с вами свяжемся. Если есть вопросы — напишите мне:',
+      telegram: 'Телеграм',
+      whatsapp: 'Ватсап',
+    },
+    ua: {
+      text: '✅ Дякуємо! Бронювання успішне. Ми з вами зв’яжемось. Якщо є питання — напишіть мені:',
+      telegram: 'Телеграм',
+      whatsapp: 'Ватсап',
+    }
+  };
+  const m = messages[lang];
+
+  useEffect(() => {
+    if (status === 'success') {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3000);
+    }
+  }, [status]);
+
   if (status === 'loading') return <h2>Загрузка...</h2>;
 
   if (status === 'success') {
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 3000);
-
-    const lang = localStorage.getItem('bookingLang') || 'de';
-
-    const messages = {
-      de: {
-        text: '✅ Danke! Ihre Buchung war erfolgreich. Wir werden Sie kontaktieren. Bei Fragen schreiben Sie mir:',
-        telegram: 'Telegram',
-        whatsapp: 'WhatsApp',
-      },
-      en: {
-        text: '✅ Thank you! Your booking was successful. We will contact you. If you have any questions, feel free to contact me:',
-        telegram: 'Telegram',
-        whatsapp: 'WhatsApp',
-      },
-      ru: {
-        text: '✅ Спасибо! Бронь успешно. Мы с вами свяжемся. Если есть вопросы — напишите мне:',
-        telegram: 'Телеграм',
-        whatsapp: 'Ватсап',
-      },
-      ua: {
-        text: '✅ Дякуємо! Бронювання успішне. Ми з вами зв’яжемось. Якщо є питання — напишіть мені:',
-        telegram: 'Телеграм',
-        whatsapp: 'Ватсап',
-      }
-    };
-
-    const m = messages[lang];
-
     return (
       <div style={{ textAlign: 'center', padding: '2rem' }}>
         <p>{m.text}</p>
