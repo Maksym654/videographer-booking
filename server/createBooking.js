@@ -1,79 +1,51 @@
-const { db } = require('./firebaseAdmin');
-const { doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs } = require('firebase-admin/firestore');
-const { sendTelegramMessage } = require('./telegramBot');
+const admin = require('./firebaseAdmin');
+const sendTelegramNotification = require('./telegramBot');
 
-async function createBooking(bookingData) {
-  const {
-    name,
-    phone,
-    email,
-    product,
-    date,
-    startTime,
-    endTime,
-    payment = 0,
-    paymentDate = '',
-    status = 'Ожидается'
-  } = bookingData;
+const db = admin.firestore();
 
-  const bookingsRef = collection(db, 'bookings');
-  const clientsRef = collection(db, 'clients');
-
-  const newBooking = {
-    name,
-    phone,
-    email,
-    product,
-    date,
-    startTime,
-    endTime,
-    payment,
-    paymentDate,
-    status,
-    createdAt: new Date().toISOString(),
-  };
-
-  await setDoc(doc(bookingsRef), newBooking);
-
-  const clientQuery = query(clientsRef,
-    where('phone', '==', phone));
-  const clientSnapshot = await getDocs(clientQuery);
-
-  let clientDoc;
-
-  if (!clientSnapshot.empty) {
-    clientDoc = clientSnapshot.docs[0];
-  } else {
-    const altQuery = query(clientsRef,
-      where('email', '==', email));
-    const altSnapshot = await getDocs(altQuery);
-    if (!altSnapshot.empty) {
-      clientDoc = altSnapshot.docs[0];
-    }
-  }
-
-  if (clientDoc) {
-    const existingData = clientDoc.data();
-    const updatedBookings = [...(existingData.bookings || []), newBooking];
-    await updateDoc(doc(clientsRef, clientDoc.id), {
-      bookings: updatedBookings,
-      totalOrders: updatedBookings.length,
-      totalSum: (existingData.totalSum || 0) + payment,
-    });
-  } else {
-    await setDoc(doc(clientsRef), {
+async function createBooking(data) {
+  try {
+    const {
       name,
       phone,
       email,
-      bookings: [newBooking],
-      totalOrders: 1,
-      totalSum: payment,
-    });
-  }
+      product,
+      date,
+      startTime,
+      endTime,
+      paymentAmount,
+      paymentDate,
+    } = data;
 
-  await sendTelegramMessage(
-    `📩 Новая бронь:\n👤 ${name}\n📱 ${phone}\n✉️ ${email}\n📸 ${product}\n📅 ${date} ${startTime}–${endTime}\n💳 Оплата: ${payment}€`
-  );
+    const bookingRef = await db.collection('bookings').add({
+      name,
+      phone,
+      email,
+      product,
+      date,
+      startTime,
+      endTime,
+      paymentAmount: paymentAmount || 0,
+      paymentDate: paymentDate || null,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+    });
+
+    console.log(`✅ Booking created with ID: ${bookingRef.id}`);
+
+    // 🔐 Безопасная отправка в Telegram (если упадёт — не сломает всё)
+    try {
+      await sendTelegramNotification(data);
+      console.log('✅ Telegram notification sent');
+    } catch (tgErr) {
+      console.error('⚠️ Telegram send error:', tgErr.message);
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error('❌ Booking creation error:', err.message);
+    return { success: false, error: err.message };
+  }
 }
 
-module.exports = { createBooking };
+module.exports = createBooking;
