@@ -1,6 +1,5 @@
-const { db } = require('./firebaseAdmin'); // ✅
-const sendTelegramNotification = require('./telegramBot');
-
+const { db } = require('./firebaseAdmin');
+const { sendTelegramMessage } = require('./telegramBot');
 
 async function createBooking(data) {
   try {
@@ -12,37 +11,80 @@ async function createBooking(data) {
       date,
       startTime,
       endTime,
-      paymentAmount,
-      paymentDate,
+      paymentAmount = 0,
+      paymentDate = null
     } = data;
 
-    const bookingRef = await db.collection('bookings').add({
-      name,
-      phone,
-      email,
-      product,
+    const bookingEntry = {
       date,
       startTime,
       endTime,
-      paymentAmount: paymentAmount || 0,
-      paymentDate: paymentDate || null,
+      product,
+      payment: paymentAmount,
+      paymentDate,
       status: 'pending',
       createdAt: new Date().toISOString(),
+      agreePolicy: true,
+      agreePrepayment: true
+    };
+
+    // 1. Добавляем бронь в коллекцию 'bookings'
+    await db.collection('bookings').add({
+      name,
+      phone,
+      email,
+      ...bookingEntry
     });
 
-    console.log(`✅ Booking created with ID: ${bookingRef.id}`);
+    // 2. Ищем клиента по email или телефону
+    const clientsRef = db.collection('clients');
+    const snapshot = await clientsRef.get();
 
-    // 🔐 Безопасная отправка в Telegram (если упадёт — не сломает всё)
-    try {
-      await sendTelegramNotification(data);
-      console.log('✅ Telegram notification sent');
-    } catch (tgErr) {
-      console.error('⚠️ Telegram send error:', tgErr.message);
+    const existingClient = snapshot.docs.find(doc => {
+      const d = doc.data();
+      return d.email === email || d.phone === phone;
+    });
+
+    if (existingClient) {
+      // 3. Если клиент существует — обновляем
+      const clientRef = existingClient.ref;
+      const clientData = existingClient.data();
+      const updatedBookings = [...(clientData.bookings || []), bookingEntry];
+      const totalSum = updatedBookings.reduce((sum, b) => sum + (b.payment || 0), 0);
+
+      await clientRef.update({
+        bookings: updatedBookings,
+        totalSum,
+        totalOrders: updatedBookings.length
+      });
+    } else {
+      // 4. Иначе создаём нового клиента
+      await clientsRef.add({
+        name,
+        phone,
+        email,
+        bookings: [bookingEntry],
+        totalSum: paymentAmount,
+        totalOrders: 1,
+        status: 'pending'
+      });
     }
 
+    // 5. Отправляем уведомление в Telegram
+    await sendTelegramMessage(`
+📸 <b>Новая бронь</b>
+👤 Имя: ${name}
+📞 Телефон: ${phone}
+📧 Email: ${email}
+🗓 Дата: ${date} ${startTime} - ${endTime}
+📦 Услуга: ${product}
+💶 Оплата: ${paymentAmount || 0}€
+    `);
+
+    console.log('✅ Бронь и клиент успешно записаны');
     return { success: true };
   } catch (err) {
-    console.error('❌ Booking creation error:', err.message);
+    console.error('❌ Ошибка при создании брони:', err.message);
     return { success: false, error: err.message };
   }
 }
