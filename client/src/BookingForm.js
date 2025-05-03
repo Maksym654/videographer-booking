@@ -55,7 +55,8 @@ function BookingForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
-      });
+        mode: 'cors',
+      });      
 
       const data = await response.json();
       const stripe = await stripePromise;
