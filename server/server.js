@@ -9,7 +9,6 @@ const PORT = 4242;
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const { createBooking } = require('./createBooking');
 
-
 // CORS
 app.use(cors({
   origin: [
@@ -61,6 +60,8 @@ app.post('/create-checkout-session', async (req, res) => {
     res.status(500).json({ error: 'Ошибка создания Stripe-сессии' });
   }
 });
+
+// --- Сохранение брони ---
 app.post('/api/book', async (req, res) => {
   try {
     await createBooking(req.body);
@@ -71,7 +72,22 @@ app.post('/api/book', async (req, res) => {
   }
 });
 
-// --- ВРЕМЕННОЕ ХРАНИЛИЩЕ ДЛЯ bookingFormData ---
+// --- 🔁 Новый способ: получаем данные напрямую из Stripe metadata ---
+app.get('/api/session-details', async (req, res) => {
+  const sessionId = req.query.session_id;
+  if (!sessionId) return res.status(400).json({ error: 'Missing session_id' });
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    res.status(200).json({ metadata: session.metadata });
+  } catch (err) {
+    console.error('❌ Ошибка получения session:', err);
+    res.status(500).json({ error: 'Ошибка при получении данных из Stripe' });
+  }
+});
+
+/*
+// --- ВРЕМЕННОЕ ХРАНИЛИЩЕ ДЛЯ bookingFormData (больше не используется) ---
 const tempBookings = new Map();
 
 app.post('/api/temp-booking', (req, res) => {
@@ -91,6 +107,7 @@ app.get('/api/temp-booking', (req, res) => {
   const formData = tempBookings.get(sessionId);
   res.status(200).json(formData);
 });
+*/
 
 // --- Запуск сервера ---
 app.listen(PORT, () => {

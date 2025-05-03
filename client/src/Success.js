@@ -1,83 +1,51 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 function Success() {
+  const [searchParams] = useSearchParams();
   const [status, setStatus] = useState('loading');
-  const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
-    const submitBooking = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const sessionId = urlParams.get('session_id');
-      if (!sessionId) return;
+    const sessionId = searchParams.get('session_id');
+    if (!sessionId) {
+      setStatus('error');
+      return;
+    }
 
+    const fetchSession = async () => {
       try {
-        const stripeRes = await fetch(`https://videographer-booking-server.onrender.com/api/checkout-session?session_id=${sessionId}`);
-        const stripeData = await stripeRes.json();
-        const metadata = stripeData?.metadata;
+        const res = await fetch(`https://videographer-booking-server.onrender.com/api/session-details?session_id=${sessionId}`);
+        const data = await res.json();
 
-        if (!metadata) throw new Error('Отсутствует metadata из Stripe session');
+        if (!data.metadata) throw new Error('Metadata not found');
 
-        const bookingData = {
-          name: metadata.name || '',
-          phone: metadata.phone || '',
-          email: metadata.email || '',
-          product: metadata.product || '',
-          date: metadata.date || null,
-          startTime: metadata.startTime || '',
-          endTime: metadata.endTime || '',
-          paymentAmount: 50,
-          paymentDate: new Date().toISOString(),
-        };
-
-        console.log('📦 bookingData to server:', bookingData);
-
-        if (!bookingData.date) throw new Error('❌ Дата брони не получена из metadata');
-
-        const res = await fetch('https://videographer-booking-server.onrender.com/api/book', {
+        const bookingRes = await fetch('https://videographer-booking-server.onrender.com/api/book', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bookingData),
+          body: JSON.stringify({
+            ...data.metadata,
+            paymentAmount: 50,
+            paymentDate: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            status: 'pending'
+          })
         });
 
-        const data = await res.json();
-        if (!data.success) throw new Error(data.error);
+        if (!bookingRes.ok) throw new Error('Booking save failed');
 
-        console.log('✅ Booking saved successfully');
         setStatus('success');
       } catch (error) {
-        console.error('❌ Ошибка при сохранении брони:', error.message);
+        console.error('❌ Ошибка на Success:', error);
         setStatus('error');
       }
     };
 
-    submitBooking();
-  }, [location.search]);
+    fetchSession();
+  }, [searchParams]);
 
-  const handleBack = () => {
-    navigate('/');
-  };
-
-  return (
-    <div style={{ padding: '30px', textAlign: 'center' }}>
-      {status === 'loading' && <p>Обработка бронирования...</p>}
-      {status === 'success' && (
-        <>
-          <h2>✅ Спасибо! Оплата прошла успешно.</h2>
-          <p>Бронирование сохранено, мы свяжемся с вами в ближайшее время.</p>
-          <button onClick={handleBack}>Вернуться</button>
-        </>
-      )}
-      {status === 'error' && (
-        <>
-          <h2>⚠️ Что-то пошло не так...</h2>
-          <p>Попробуйте позже или свяжитесь с нами напрямую.</p>
-          <button onClick={handleBack}>Вернуться</button>
-        </>
-      )}
-    </div>
-  );
+  if (status === 'loading') return <h2>Загрузка...</h2>;
+  if (status === 'success') return <h2>✅ Спасибо! Бронь успешно сохранена.</h2>;
+  return <h2>⚠️ Ошибка! Попробуйте позже.</h2>;
 }
 
 export default Success;
