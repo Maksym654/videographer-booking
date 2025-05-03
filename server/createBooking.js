@@ -82,16 +82,20 @@ async function createBooking(data) {
       });
     }
 
-    // 5. Отправляем уведомление в Telegram
-    await sendTelegramMessage(`
-📸 <b>Новая бронь</b>
-👤 Имя: ${name}
-📞 Телефон: ${phone}
-📧 Email: ${email}
-🗓 Дата: ${date} ${startTime} - ${endTime}
-📦 Услуга: ${product}
-💶 Оплата: ${paymentAmount || 0}€
+   // 5. Отправляем уведомление в Telegram
+   const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Съёмка+${encodeURIComponent(name)}&details=Клиент:+${encodeURIComponent(name)},+тел:+${encodeURIComponent(phone)}&dates=${date.replace(/-/g, '')}T000000Z/${date.replace(/-/g, '')}T235900Z`;
+   await sendTelegramMessage(`
+    📸 <b>Новая бронь</b>
+    👤 Имя: ${name}
+    📞 Телефон: ${phone}
+    📧 Email: ${email}
+    🗓 Дата: ${date} ${startTime} - ${endTime}
+    📦 Услуга: ${product}
+    💶 Оплата: ${paymentAmount || 0}€
+    🔗 <a href="${calendarLink}">Добавить в календарь</a>
+    🔎 <a href="https://videographer-booking-client.onrender.com/admin">Просмотреть</a>
     `);
+    
 
     console.log('✅ Бронь и клиент успешно записаны');
     return { success: true };
