@@ -31,7 +31,7 @@ app.get('/api/available-dates', async (req, res) => {
 
 // --- Stripe Checkout ---
 app.post('/create-checkout-session', async (req, res) => {
-  const { name, email, phone, product, date, startTime, endTime } = req.body;
+  const { name, email, phone, product, date, startTime, endTime, dateId } = req.body;
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -51,7 +51,7 @@ app.post('/create-checkout-session', async (req, res) => {
       }],
       success_url: 'https://videographer-booking-client.onrender.com/success?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://videographer-booking-client.onrender.com/canceled',
-      metadata: { name, phone, email, product, date, startTime, endTime },
+      metadata: { name, phone, email, product, date, startTime, endTime, dateId },
     });
 
     res.status(200).json({ sessionId: session.id, url: session.url });
