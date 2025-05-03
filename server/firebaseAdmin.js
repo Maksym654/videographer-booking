@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccountKey.json'); // твой ключ от Firebase Admin
+const serviceAccount = require('./firebaseConfig.json'); // твой ключ от Firebase Admin
 
 if (!admin.apps.length) {
   admin.initializeApp({
