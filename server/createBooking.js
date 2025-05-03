@@ -12,7 +12,8 @@ async function createBooking(data) {
       startTime,
       endTime,
       paymentAmount = 0,
-      paymentDate = null
+      paymentDate = null,
+      dateId // ← важно!
     } = data;
 
     const bookingEntry = {
@@ -27,6 +28,17 @@ async function createBooking(data) {
       agreePolicy: true,
       agreePrepayment: true
     };
+
+    // 0. Помечаем выбранную дату как занятую (если dateId есть)
+    if (dateId) {
+      try {
+        const dateRef = db.collection('availabledates').doc(dateId);
+        await dateRef.update({ isBooked: true });
+        console.log('✅ Дата помечена как занятая');
+      } catch (e) {
+        console.warn('⚠️ Не удалось пометить дату как занятую:', e.message);
+      }
+    }
 
     // 1. Добавляем бронь в коллекцию 'bookings'
     await db.collection('bookings').add({

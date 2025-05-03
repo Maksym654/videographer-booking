@@ -60,7 +60,8 @@ function BookingForm() {
       date: selected.date,
       startTime: selected.timeStart,
       endTime: selected.timeEnd,
-    };
+      dateId: selected.id, // 🔥 обязательно добавляем
+    };    
   
     try {
       // 1. Создаём Stripe-сессию
@@ -98,12 +99,12 @@ function BookingForm() {
   };   
 
   const tileClassName = ({ date }) => {
-    const formatted = date.toISOString().split('T')[0];
+    const formatted = date.toLocaleDateString('sv-SE');
     return availableDates.some((d) => d.date === formatted) ? 'available-date' : null;
   };
 
   const handleDateSelect = (selectedDate) => {
-    const formatted = selectedDate.toISOString().split('T')[0];
+    const formatted = selectedDate.toLocaleDateString('sv-SE');
     const selected = availableDates.find((d) => d.date === formatted);
     setFormData({
       ...formData,
