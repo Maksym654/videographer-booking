@@ -7,6 +7,8 @@ require('dotenv').config();
 const app = express();
 const PORT = 4242;
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const { createBooking } = require('./createBooking');
+
 
 // CORS
 app.use(cors({
@@ -59,6 +61,16 @@ app.post('/create-checkout-session', async (req, res) => {
     res.status(500).json({ error: 'Ошибка создания Stripe-сессии' });
   }
 });
+app.post('/api/book', async (req, res) => {
+  try {
+    await createBooking(req.body);
+    res.status(200).json({ message: 'Booking saved' });
+  } catch (err) {
+    console.error('❌ Ошибка при сохранении брони:', err);
+    res.status(500).json({ error: 'Ошибка при сохранении брони' });
+  }
+});
+
 // --- ВРЕМЕННОЕ ХРАНИЛИЩЕ ДЛЯ bookingFormData ---
 const tempBookings = new Map();
 
