@@ -90,6 +90,7 @@ function BookingForm() {
       });
   
       // 3. Перенаправляем на Stripe
+      localStorage.setItem('bookingLang', language); // сохранить выбранный язык
       const stripe = await stripePromise;
       await stripe.redirectToCheckout({ sessionId });
     } catch (error) {
