@@ -29,6 +29,12 @@ function BookingForm() {
     ru: 'ru-RU',
     ua: 'uk-UA',
   };
+  useEffect(() => {
+    // Скромный запрос для "разбуживания" сервера
+    fetch('https://videographer-booking-server.onrender.com/ping')
+      .catch((err) => console.log('Ping failed:', err));
+  }, []);
+  
 
   useEffect(() => {
     const fetchDates = async () => {

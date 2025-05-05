@@ -108,6 +108,10 @@ app.get('/api/temp-booking', (req, res) => {
   res.status(200).json(formData);
 });
 */
+// --- ПИНГ для "разбуживания" сервера ---
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
 
 // --- Запуск сервера ---
 app.listen(PORT, () => {
