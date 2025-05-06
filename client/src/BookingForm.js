@@ -246,14 +246,14 @@ function BookingForm() {
 
         
         <div className="server-wake-note">
-          {serverReady ? (
-            <span className="server-ready">{t.serverReady}</span>
-          ) : (
-            <span className="server-loading">
-              <span className="spinner-icon">🔄</span> {t.serverConnecting}
-            </span>
-          )}
-        </div>
+  {serverReady ? (
+    <span className="server-ready">✅ {t.serverReady}</span>
+  ) : (
+    <span className="server-loading">
+      <span className="spinner-icon" /> {t.serverConnecting}
+    </span>
+  )}
+</div>
 
         <button
           type="submit"
