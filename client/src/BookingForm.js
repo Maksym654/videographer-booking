@@ -6,7 +6,7 @@ import translations from './translations';
 import { getAvailableDates } from './services/bookingService';
 import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe('pk_test_51RJGQqGxtq8EnrYWvJDGwcixbAOseYMlOeRoPXRNZlBDMlmqOZwZQeZvoviA6rhkshmUcVuCTvW9tAjkZZVs5aTF00fn7m4ulh');
+const stripePromise = loadStripe('pk_live_51RJGQqGxtq8EnrYWbnMFqTg8tsCraBnfEj5VMktlMOiAFIhFEjDZZS98hEdNhej45nxGOosVZZFTpJeDlegoVsNC00Er8XXMkM');
 
 function BookingForm() {
   // 👇 Новый флаг: сервер проснулся
