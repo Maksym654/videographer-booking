@@ -6,6 +6,8 @@ const translations = {
       type: 'Art der Aufnahme',
       date: 'Verfügbare Termine',
       book: 'Buchen',
+      serverConnecting: '🔄 Verbindung wird hergestellt... Bitte warten Sie einen Moment.',
+      serverReady: '✅ Der Server ist verbunden. Sie können jetzt buchen.',
       types: [
         'Content-Aufnahme (Beauty, Events, Persönliches usw.)',
         'UGC',
@@ -62,6 +64,8 @@ const translations = {
       type: 'Тип съёмки',
       date: 'Свободные даты',
       book: 'Забронировать',
+      serverConnecting: '🔄 Подключение... Пожалуйста, подождите пару секунд.',
+      serverReady: '✅ Сервер подключён, можно бронировать.',
       types: [
         'Контент-съёмка (бьюти, ивенты, личные и т.д.)',
         'UGC',
@@ -120,6 +124,8 @@ const translations = {
       type: 'Type of Shoot',
       date: 'Available Dates',
       book: 'Book',
+      serverConnecting: '🔄 Connecting... Please wait a moment.',
+      serverReady: '✅ Server is ready. You can proceed to booking.',
       types: [
         'Content Shoot (Beauty, Events, Personal, etc.)',
         'UGC',
@@ -178,6 +184,8 @@ const translations = {
       type: 'Тип зйомки',
       date: 'Доступні дати',
       book: 'Забронювати',
+      serverConnecting: '🔄 Підключення... Будь ласка, зачекайте кілька секунд.',
+      serverReady: '✅ Сервер підключено, можна бронювати.',
       types: [
         'Контент-зйомка (бʼюті, івенти, особисті тощо)',
         'UGC',

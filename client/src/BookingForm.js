@@ -9,6 +9,10 @@ import { loadStripe } from '@stripe/stripe-js';
 const stripePromise = loadStripe('pk_test_51RJGQqGxtq8EnrYWvJDGwcixbAOseYMlOeRoPXRNZlBDMlmqOZwZQeZvoviA6rhkshmUcVuCTvW9tAjkZZVs5aTF00fn7m4ulh');
 
 function BookingForm() {
+  // 👇 Новый флаг: сервер проснулся
+  const [serverReady, setServerReady] = useState(false);
+
+  // 👇 Основные данные формы
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -30,9 +34,14 @@ function BookingForm() {
     ua: 'uk-UA',
   };
   useEffect(() => {
-    // Скромный запрос для "разбуживания" сервера
+    // 🔧 Старый ping (закомментирован)
+    // fetch('https://videographer-booking-server.onrender.com/ping')
+    //   .catch((err) => console.log('Ping failed:', err));
+
+    // ✅ Новый ping с serverReady
     fetch('https://videographer-booking-server.onrender.com/ping')
-      .catch((err) => console.log('Ping failed:', err));
+      .then(() => setServerReady(true))
+      .catch(() => setServerReady(true));
   }, []);
   
 
@@ -235,7 +244,21 @@ function BookingForm() {
           </label>
         </div>
 
-        <button type="submit" className="submit-button">{t.book}</button>
+        
+        <div className="server-wake-note">
+          {serverReady ? (
+            <span className="server-ready">{t.serverReady}</span>
+          ) : (
+            <span className="server-loading">
+              <span className="spinner-icon">🔄</span> {t.serverConnecting}
+            </span>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className={`submit-button ${serverReady ? "" : "disabled-button"}`}
+          disabled={!serverReady}>{t.book}</button>
       </form>
     </div>
   );
