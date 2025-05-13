@@ -12,6 +12,14 @@ function DatesManager() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // ✏️ Новое: состояния для редактирования
+  const [editingId, setEditingId] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    date: '',
+    timeStart: '',
+    timeEnd: ''
+  });
+
   // Загрузка дат из Firestore
   const fetchDates = async () => {
     const snapshot = await getDocs(collection(db, 'availabledates'));
@@ -59,6 +67,34 @@ function DatesManager() {
   const handleDelete = async (id) => {
     await deleteDoc(doc(db, 'availabledates', id));
     fetchDates();
+  };
+
+  // ✏️ Начать редактирование
+  const handleEdit = (item) => {
+    setEditingId(item.id);
+    setEditFormData({
+      date: item.date,
+      timeStart: item.timeStart,
+      timeEnd: item.timeEnd
+    });
+  };
+
+  // 💾 Сохранить изменения
+  const handleSaveEdit = async () => {
+    try {
+      const dateRef = doc(db, 'availabledates', editingId);
+      await updateDoc(dateRef, {
+        date: editFormData.date,
+        timeStart: editFormData.timeStart,
+        timeEnd: editFormData.timeEnd
+      });
+      setEditingId(null);
+      setEditFormData({ date: '', timeStart: '', timeEnd: '' });
+      fetchDates();
+    } catch (err) {
+      console.error('Ошибка при обновлении даты:', err);
+      alert('Не удалось обновить дату');
+    }
   };
 
   return (
@@ -109,15 +145,35 @@ function DatesManager() {
       <h3>Список дат:</h3>
       <ul>
         {dates.map((item) => (
-          <li key={item.id}>
-            {item.date} | {item.timeStart} - {item.timeEnd} | {item.isBooked ? 'Забронировано' : 'Свободно'}
-            <button
-              onClick={() => handleDelete(item.id)}
-              style={{ marginLeft: '10px', color: 'red' }}
-            >
-              Удалить
-            </button>
-          </li>
+          <li key={item.id} className="date-item">
+          {editingId === item.id ? (
+            <>
+              <input
+                type="date"
+                value={editFormData.date}
+                onChange={(e) => setEditFormData({ ...editFormData, date: e.target.value })}
+              />
+              <input
+                type="time"
+                value={editFormData.timeStart}
+                onChange={(e) => setEditFormData({ ...editFormData, timeStart: e.target.value })}
+              />
+              <input
+                type="time"
+                value={editFormData.timeEnd}
+                onChange={(e) => setEditFormData({ ...editFormData, timeEnd: e.target.value })}
+              />
+              <button onClick={handleSaveEdit}>💾 Сохранить</button>
+              <button onClick={() => setEditingId(null)}>✖ Отмена</button>
+            </>
+          ) : (
+            <>
+              {item.date} | {item.timeStart} - {item.timeEnd} | {item.isBooked ? 'Забронировано' : 'Свободно'}
+              <button onClick={() => handleEdit(item)}>✏️ Редактировать</button>
+              <button onClick={() => handleDelete(item.id)}>🗑️ Удалить</button>
+            </>
+          )}
+        </li>        
         ))}
       </ul>
     </div>

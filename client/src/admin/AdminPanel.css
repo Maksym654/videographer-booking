@@ -91,3 +91,65 @@
     padding: 1rem;
   }
 }
+/* ====== Редактирование дат ====== */
+.date-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  background-color: #35354a;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.date-item input[type="date"],
+.date-item input[type="time"] {
+  background-color: #2a2a3d;
+  border: 1px solid #555;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.date-item button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.date-item button:hover {
+  opacity: 0.85;
+}
+
+.date-item button:first-of-type {
+  background-color: #6abf69; /* Сохранить */
+  color: #fff;
+}
+
+.date-item button:nth-of-type(2) {
+  background-color: #f57c7c; /* Отмена или удалить */
+  color: #fff;
+}
+
+.date-item button:nth-of-type(3) {
+  background-color: #8884ff; /* Редактировать */
+  color: #fff;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 600px) {
+  .date-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .date-item input,
+  .date-item button {
+    width: 100%;
+  }
+}
