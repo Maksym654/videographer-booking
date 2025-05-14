@@ -48,7 +48,7 @@ app.post('/create-checkout-session', async (req, res) => {
             name: `Бронирование: ${product}`,
             description: `Имя: ${name}, Телефон: ${phone}`
           },
-          unit_amount: 5000,
+          unit_amount: 50,
         },
         quantity: 1,
       }],
