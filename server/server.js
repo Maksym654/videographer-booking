@@ -46,7 +46,7 @@ app.post('/create-checkout-session', async (req, res) => {
           currency: 'eur',
           product_data: {
             name: `Бронирование: ${product}`,
-            description: `Имя: ${name}, Телефон: ${phone}`
+            description: `Имя: ${name}, Телефон: ${phone}, Дата: ${date} ${startTime}-${endTime}`
           },
           unit_amount: 50,
         },
@@ -94,17 +94,26 @@ app.get('/api/session-details', async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     // ✅ Добавляем Telegram-уведомление после оплаты
-    if (session.payment_status === 'paid') {
-      try {
-        await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          chat_id: process.env.TELEGRAM_CHAT_ID,
-          text: '✅ Оплата 50€'
-        });
-        console.log('✅ Telegram: сообщение об оплате успешно отправлено');
-      } catch (err) {
-        console.error('❌ Ошибка отправки в Telegram:', err.response?.data || err.message);
-      }
-    }    
+    // 🔍 Получаем оба статуса от Stripe
+const stripeStatus = session.status;
+const paymentStatus = session.payment_status;
+
+// 🧠 Интерпретация
+let explanation = 'оплата неуспешная';
+if (paymentStatus === 'paid' || stripeStatus === 'complete') {
+  explanation = 'оплата успешная';
+}
+
+// 📨 Отправляем сообщение в Telegram
+try {
+  await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    chat_id: process.env.TELEGRAM_CHAT_ID,
+    text: `Stripe статус: ${paymentStatus} / ${stripeStatus}\n💬 ${explanation}`
+  });
+  console.log('✅ Telegram: статус Stripe отправлен');
+} catch (err) {
+  console.error('❌ Ошибка отправки в Telegram:', err.response?.data || err.message);
+}   
 
     res.status(200).json({ metadata: session.metadata });
   } catch (err) {
