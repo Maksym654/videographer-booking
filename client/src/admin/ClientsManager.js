@@ -351,8 +351,9 @@ function ClientsManager() {
 
                         <input
                           type="number"
-                          value={booking.payment ?? ''}
-                          placeholder="Сумма"
+                          inputMode="decimal"
+                          value={booking.payment === 0 ? '' : booking.payment}
+                          placeholder="0"
                           min={0}
                           onChange={(e) => handleBookingPaymentChange(client.id, idx, e.target.value)}
                         />
