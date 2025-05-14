@@ -48,7 +48,8 @@ app.post('/create-checkout-session', async (req, res) => {
             name: `Бронирование: ${product}`,
             description: `Имя: ${name}, Телефон: ${phone}, Дата: ${date} ${startTime}-${endTime}`
           },
-          unit_amount: 50,
+          unit_amount: 50
+          ,
         },
         quantity: 1,
       }],
@@ -109,15 +110,19 @@ app.get('/api/session-details', async (req, res) => {
     }
     
     // 📩 Отправка в Telegram
-    try {
-      await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        chat_id: process.env.TELEGRAM_CHAT_ID,
-        text: `💳 Stripe статус: ${paymentStatus} / ${stripeStatus}\n${explanation}`
-      });
-      console.log('✅ Telegram: сообщение отправлено');
-    } catch (err) {
-      console.error('❌ Ошибка Telegram:', err.response?.data || err.message);
-    }       
+    const chatIds = process.env.TELEGRAM_CHAT_IDS?.split(',') || [];
+
+for (const chat_id of chatIds) {
+  try {
+    await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      chat_id,
+      text: `💳 Stripe статус: ${paymentStatus} / ${stripeStatus}\n${explanation}`
+    });
+    console.log(`✅ Telegram: сообщение отправлено в chat_id ${chat_id}`);
+  } catch (err) {
+    console.error(`❌ Ошибка Telegram для chat_id ${chat_id}:`, err.response?.data || err.message);
+  }
+}      
 
     res.status(200).json({ metadata: session.metadata });
   } catch (err) {
