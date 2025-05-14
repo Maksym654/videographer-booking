@@ -56,6 +56,37 @@ function AdminPanel() {
     }
   };
 
+  // 🔁 Тестовая бронь без оплаты
+  const handleTestBooking = async () => {
+    try {
+      const response = await fetch('https://videographer-booking-server.onrender.com/api/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Тест Клиент',
+          phone: '0000000000',
+          email: 'test@example.com',
+          product: 'Тест-съёмка',
+          dateId: 'test-manual-date-id',
+          agreePolicy: true,
+          agreePrepayment: true,
+          payment: 0,
+          paymentDate: null,
+          stripeSessionId: 'test_session_id',
+          createdAt: new Date().toISOString(),
+          status: 'pending'
+        })
+      });
+
+      const result = await response.json();
+      console.log('✅ Результат тестовой брони:', result);
+      alert('Тестовая бронь отправлена');
+    } catch (err) {
+      console.error('❌ Ошибка при отправке тестовой брони:', err);
+      alert('Ошибка отправки');
+    }
+  };
+
   if (!authenticated) {
     return (
       <div style={{ padding: '40px', maxWidth: '400px', margin: '0 auto', textAlign: 'center' }}>
@@ -95,6 +126,11 @@ function AdminPanel() {
         <button onClick={handleExportAndCleanup}>
           📄 Скачать базу
         </button>
+      </div>
+
+      {/* 🔘 Временная кнопка для тестовой брони */}
+      <div style={{ marginTop: '10px' }}>
+        <button onClick={handleTestBooking}>🔁 Создать тестовую бронь (без Stripe)</button>
       </div>
 
       <div className="admin-content">
