@@ -95,11 +95,16 @@ app.get('/api/session-details', async (req, res) => {
 
     // ✅ Добавляем Telegram-уведомление после оплаты
     if (session.payment_status === 'paid') {
-      await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        chat_id: process.env.TELEGRAM_CHAT_ID,
-        text: '✅ Оплата 50€'
-      });
-    }
+      try {
+        await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          chat_id: process.env.TELEGRAM_CHAT_ID,
+          text: '✅ Оплата 50€'
+        });
+        console.log('✅ Telegram: сообщение об оплате успешно отправлено');
+      } catch (err) {
+        console.error('❌ Ошибка отправки в Telegram:', err.response?.data || err.message);
+      }
+    }    
 
     res.status(200).json({ metadata: session.metadata });
   } catch (err) {

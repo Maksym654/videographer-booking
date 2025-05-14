@@ -13,23 +13,29 @@ function Success() {
       return;
     }
 
-    const fetchSession = async () => {
+       const fetchSession = async () => {
       try {
         const res = await fetch(`https://videographer-booking-server.onrender.com/api/session-details?session_id=${sessionId}`);
         const data = await res.json();
 
         if (!data.metadata) throw new Error('Metadata not found');
 
+        // ✅ Лог на проверку
+        console.log('📦 metadata received from Stripe:', data.metadata);
+
+        // ✅ Новый объект с правильным полем "payment"
+        const bookingPayload = {
+          ...data.metadata,
+          payment: 50, // 👈 заменили paymentAmount → payment
+          paymentDate: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          status: 'pending'
+        };
+
         const bookingRes = await fetch('https://videographer-booking-server.onrender.com/api/book', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...data.metadata,
-            paymentAmount: 50,
-            paymentDate: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
-            status: 'pending'
-          })
+          body: JSON.stringify(bookingPayload)
         });
 
         if (!bookingRes.ok) throw new Error('Booking save failed');
