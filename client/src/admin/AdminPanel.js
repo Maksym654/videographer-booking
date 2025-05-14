@@ -56,7 +56,7 @@ function AdminPanel() {
     }
   };
 
-  // 🔁 Тестовая бронь с реальным dateId
+  // 🔁 Тестовая бронь без оплаты
   const handleTestBooking = async () => {
     try {
       const response = await fetch('https://videographer-booking-server.onrender.com/api/book', {
@@ -80,7 +80,8 @@ function AdminPanel() {
           stripeSessionId: 'test_session_id',
           createdAt: new Date().toISOString(),
           status: 'pending'
-        })        
+        })
+      });
 
       const result = await response.json();
       console.log('✅ Результат тестовой брони:', result);
