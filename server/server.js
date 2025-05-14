@@ -1,8 +1,11 @@
+// server.js
+
 const express = require('express');
 const cors = require('cors');
 const Stripe = require('stripe');
 const { getAvailableDates } = require('./googleSheets');
 require('dotenv').config();
+const axios = require('axios');
 
 const app = express();
 const PORT = 4242;
@@ -35,7 +38,7 @@ app.post('/create-checkout-session', async (req, res) => {
 
   try {
     const session = await stripe.checkout.sessions.create({
-     // payment_method_types: ['card'],
+      // payment_method_types: ['card'],
       mode: 'payment',
       customer_email: email,
       line_items: [{
@@ -51,7 +54,17 @@ app.post('/create-checkout-session', async (req, res) => {
       }],
       success_url: 'https://videographer-booking-client.onrender.com/success?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'https://videographer-booking-client.onrender.com/canceled',
-      metadata: { name, phone, email, product, date, startTime, endTime, dateId },
+      // 🆕 Обновлённый metadata с датой и временем бронирования
+      metadata: {
+        name,
+        phone,
+        email,
+        product,
+        date,
+        startTime,
+        endTime,
+        dateId
+      },
     });
 
     res.status(200).json({ sessionId: session.id, url: session.url });
@@ -72,13 +85,22 @@ app.post('/api/book', async (req, res) => {
   }
 });
 
-// --- 🔁 Новый способ: получаем данные напрямую из Stripe metadata ---
+// --- Получение данных из Stripe + Telegram уведомление ---
 app.get('/api/session-details', async (req, res) => {
   const sessionId = req.query.session_id;
   if (!sessionId) return res.status(400).json({ error: 'Missing session_id' });
 
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    // ✅ Добавляем Telegram-уведомление после оплаты
+    if (session.payment_status === 'paid') {
+      await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        chat_id: process.env.TELEGRAM_CHAT_ID,
+        text: '✅ Оплата 50€'
+      });
+    }
+
     res.status(200).json({ metadata: session.metadata });
   } catch (err) {
     console.error('❌ Ошибка получения session:', err);
@@ -108,6 +130,7 @@ app.get('/api/temp-booking', (req, res) => {
   res.status(200).json(formData);
 });
 */
+
 // --- ПИНГ для "разбуживания" сервера ---
 app.get('/ping', (req, res) => {
   res.status(200).send('pong');
@@ -117,5 +140,3 @@ app.get('/ping', (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Сервер запущен на http://localhost:${PORT}`);
 });
-
-// --- УДАЛЯЕМ ЛОГИКУ ОТПРАВКИ УВЕДОМЛЕНИЙ В TELEGRAM ---

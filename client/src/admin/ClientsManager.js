@@ -1,5 +1,3 @@
-// ВНИМАНИЕ! Это стабильная версия ClientsManager.js, полностью восстановленная по боевому коду
-
 import React, { useEffect, useState } from 'react';
 import {
   collection,
@@ -7,7 +5,8 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  getDoc
+  getDoc,
+  addDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import './ClientsManager.css';
@@ -36,6 +35,7 @@ function ClientsManager() {
   const [sortBy, setSortBy] = useState('status');
   const [newBooking, setNewBooking] = useState({ product: '', payment: '' });
   const [paymentEdited, setPaymentEdited] = useState({});
+  const [newClient, setNewClient] = useState({ name: '', phone: '', email: '' });
 
   useEffect(() => {
     const clientsRef = collection(db, 'clients');
@@ -61,6 +61,33 @@ function ClientsManager() {
 
     return () => unsubscribe();
   }, []);
+
+  const handleCreateClient = async () => {
+    if (!newClient.name || !newClient.phone) {
+      return alert('Введите имя и телефон клиента');
+    }
+
+    const duplicate = clients.find(c =>
+      c.phone === newClient.phone || (newClient.email && c.email === newClient.email)
+    );
+    if (duplicate) {
+      return alert('Клиент с таким телефоном или email уже существует');
+    }
+
+    try {
+      await addDoc(collection(db, 'clients'), {
+        ...newClient,
+        bookings: [],
+        totalOrders: 0,
+        totalSum: 0,
+        createdAt: new Date()
+      });
+      setNewClient({ name: '', phone: '', email: '' });
+    } catch (error) {
+      console.error('Ошибка при добавлении клиента:', error);
+      alert('Ошибка при добавлении клиента');
+    }
+  };
 
   const countPendingBookings = (client) => {
     return (client.bookings || []).filter(b => b.status !== 'done').length;
@@ -175,6 +202,30 @@ function ClientsManager() {
           <option value="email">Email</option>
           <option value="phone">Телефон</option>
         </select>
+      </div>
+
+      {/* 🔘 Форма добавления нового клиента */}
+      <div className="create-client-form">
+        <h4>Создать нового клиента</h4>
+        <input
+          type="text"
+          placeholder="Имя"
+          value={newClient.name}
+          onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Телефон"
+          value={newClient.phone}
+          onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={newClient.email}
+          onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+        />
+        <button onClick={handleCreateClient}>➕ Добавить клиента</button>
       </div>
 
       {sortedClients.map(client => {

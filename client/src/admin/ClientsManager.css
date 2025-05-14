@@ -42,11 +42,15 @@
 }
 
 .edit-btn {
-  background: transparent;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: none;
   border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
+  font-size: 1.2rem;
   color: #b08aff;
+  cursor: pointer;
+  z-index: 2;
   transition: 0.2s;
 }
 
@@ -163,14 +167,70 @@
   font-size: 0.9rem;
 }
 
+/* 🔘 СТИЛИ ДЛЯ СОЗДАНИЯ КЛИЕНТА */
+.create-client-form {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #b08aff;
+  border-radius: 12px;
+  background: #2a234a;
+  box-shadow: 0 4px 12px rgba(176, 138, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 100%;
+  color: white;
+}
+
+.create-client-form input {
+  padding: 8px 10px;
+  border: 1px solid #b08aff;
+  border-radius: 6px;
+  background: #1e1b2e;
+  color: white;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.create-client-form button {
+  padding: 10px 16px;
+  background-color: #a87fff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  width: fit-content;
+  align-self: flex-start;
+}
+
+/* 📱 Мобильная адаптация */
 @media (max-width: 600px) {
   .client-summary {
     font-size: 0.95rem;
+    padding-right: 40px;
   }
 
   .summary-right {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .edit-btn {
+    top: 8px;
+    right: 8px;
+    font-size: 1.4rem;
+  }
+
+  .edit-icons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .client-summary input {
+    font-size: 0.95rem;
   }
 
   .booking-entry input[type="number"] {
@@ -183,48 +243,25 @@
     margin-top: 6px;
   }
 
-  .edit-icons {
-    display: flex;
-    justify-content: flex-end;
+  .create-client-form {
+    padding: 12px;
     gap: 10px;
   }
-}
-.edit-btn {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  color: #b08aff;
-  cursor: pointer;
-  z-index: 2;
-}
-@media (max-width: 600px) {
-  .client-summary {
-    padding-right: 40px; /* чтобы ✏️ не перекрывал текст */
+
+  .create-client-form input,
+  .create-client-form button {
+    font-size: 16px;
+    width: 100%;
   }
 
-  .edit-btn {
-    top: 8px;
-    right: 8px;
-    font-size: 1.4rem;
+  .create-client-form button {
+    align-self: stretch;
   }
 
-  .edit-icons {
-    justify-content: flex-start;
-    margin-top: 10px;
-  }
-
-  .client-summary input {
-    font-size: 0.95rem;
-  }
-}
-@media (max-width: 600px) {
   input,
   select,
   textarea {
-    font-size: 16px !important; /* это отключает zoom на iOS Safari */
+    font-size: 16px !important; /* отключает зум на iOS Safari */
   }
 
   body {
