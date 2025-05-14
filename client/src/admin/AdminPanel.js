@@ -56,7 +56,7 @@ function AdminPanel() {
     }
   };
 
-  // 🔁 Тестовая бронь без оплаты
+  // 🔁 Тестовая бронь с реальным dateId
   const handleTestBooking = async () => {
     try {
       const response = await fetch('https://videographer-booking-server.onrender.com/api/book', {
@@ -67,7 +67,10 @@ function AdminPanel() {
           phone: '0000000000',
           email: 'test@example.com',
           product: 'Тест-съёмка',
-          dateId: 'test-manual-date-id',
+          dateId: '6t1lHrhcbkgSA1MMX5Qkf', // <-- Реальный ID
+          date: '2025-05-21',
+          timeStart: '10:00',
+          timeEnd: '15:00',
           agreePolicy: true,
           agreePrepayment: true,
           payment: 0,
