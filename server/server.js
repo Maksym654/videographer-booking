@@ -48,7 +48,7 @@ app.post('/create-checkout-session', async (req, res) => {
             name: `Бронирование: ${product}`,
             description: `Имя: ${name}, Телефон: ${phone}, Дата: ${date} ${startTime}-${endTime}`
           },
-          unit_amount: 50,
+          unit_amount: 1,
         },
         quantity: 1,
       }],
@@ -95,25 +95,29 @@ app.get('/api/session-details', async (req, res) => {
 
     // ✅ Добавляем Telegram-уведомление после оплаты
     // 🔍 Получаем оба статуса от Stripe
-const stripeStatus = session.status;
-const paymentStatus = session.payment_status;
-
-// 🧠 Интерпретация
-let explanation = 'оплата неуспешная';
-if (paymentStatus === 'paid' || stripeStatus === 'complete') {
-  explanation = 'оплата успешная';
-}
-
-// 📨 Отправляем сообщение в Telegram
-try {
-  await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-    chat_id: process.env.TELEGRAM_CHAT_ID,
-    text: `Stripe статус: ${paymentStatus} / ${stripeStatus}\n💬 ${explanation}`
-  });
-  console.log('✅ Telegram: статус Stripe отправлен');
-} catch (err) {
-  console.error('❌ Ошибка отправки в Telegram:', err.response?.data || err.message);
-}   
+    const stripeStatus = session.status || 'неизвестно';
+    const paymentStatus = session.payment_status || 'неизвестно';
+    
+    // 🧠 Объяснение
+    let explanation = '⚠️ неуспешная или прерванная оплата';
+    if (paymentStatus === 'paid' && stripeStatus === 'complete') {
+      explanation = '✅ оплата успешная';
+    } else if (stripeStatus === 'complete') {
+      explanation = '⚠️ сессия завершена, но оплата не прошла';
+    } else if (paymentStatus === 'unpaid') {
+      explanation = '❌ оплата отклонена или не выполнена';
+    }
+    
+    // 📩 Отправка в Telegram
+    try {
+      await axios.post(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        chat_id: process.env.TELEGRAM_CHAT_ID,
+        text: `💳 Stripe статус: ${paymentStatus} / ${stripeStatus}\n${explanation}`
+      });
+      console.log('✅ Telegram: сообщение отправлено');
+    } catch (err) {
+      console.error('❌ Ошибка Telegram:', err.response?.data || err.message);
+    }       
 
     res.status(200).json({ metadata: session.metadata });
   } catch (err) {
