@@ -67,10 +67,12 @@ function AdminPanel() {
           phone: '0000000000',
           email: 'test@example.com',
           product: 'Тест-съёмка',
-          dateId: '6t1lHrhcbkgSA1MMX5Qkf', // <-- Реальный ID
+          dateId: '6t1lHrhcbkgSA1MMX5Qkf',
           date: '2025-05-21',
           timeStart: '10:00',
           timeEnd: '15:00',
+          startTime: '10:00',
+          endTime: '15:00',
           agreePolicy: true,
           agreePrepayment: true,
           payment: 0,
@@ -78,8 +80,7 @@ function AdminPanel() {
           stripeSessionId: 'test_session_id',
           createdAt: new Date().toISOString(),
           status: 'pending'
-        })
-      });
+        })        
 
       const result = await response.json();
       console.log('✅ Результат тестовой брони:', result);
